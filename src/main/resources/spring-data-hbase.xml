@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:p="http://www.springframework.org/schema/p" 
+  xmlns:hdp="http://www.springframework.org/schema/hadoop" 
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+    http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd 
+  ">
+
+    <!-- <hdp:configuration resources="classpath:hbase-site.xml"/>
+    <hdp:hbase-configuration configuration-ref="hadoopConfiguration" delete-connection="false" />
+    <bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate">
+        <property name="configuration" ref="hbaseConfiguration" />
+        <property name="encoding" value="UTF-8" />
+    </bean> -->
+
+    <!-- 
+      hbase.client.operation.timeout：表示HBase客户端发起一次数据操作直至得到响应之间总的超时时间
+      hbase.client.scanner.timeout.period：表示HBase客户端发起一次scan操作的rpc调用至得到响应之间总的超时时间
+      fs.defaultFS=hdfs://hd.host:8020
+      fs.default.name=hdfs://192.168.1.100:9001
+     -->
+    <hdp:configuration id="hadoopConfiguration">
+       zookeeper.znode.parent=${zk.znode.parent}
+       fs.hdfs.impl=org.apache.hadoop.hdfs.DistributedFileSystem
+       hbase.rpc.timeout=60000
+       hbase.ipc.socket.timeout=60000
+       hbase.client.operation.timeout=120000
+       hbase.client.scanner.timeout.period=300000
+       hbase.client.pause=1000
+       hbase.client.retries.number=15
+       hbase.client.write.buffer=52428800
+       zookeeper.session.timeout=60000
+    </hdp:configuration>
+
+    <hdp:hbase-configuration id="hbaseConfiguration" configuration-ref="hadoopConfiguration"
+                             zk-quorum="${hbase.zk.quorum}" zk-port="${hbase.zk.port}" 
+                             delete-connection="false" stop-proxy="false" />
+
+    <bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate"
+          p:configuration-ref="hbaseConfiguration" p:encoding="UTF-8" />
+
+</beans>
