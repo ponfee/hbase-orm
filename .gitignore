@@ -7,6 +7,13 @@
 /**/.idea/
 /**/*.iml
 /**/*.iws
+/**/*.ipr
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+/**/.nb-gradle/
 
 # Mac
 /**/.DS_Store
@@ -17,6 +24,11 @@
 # Gradle
 /**/.gradle/
 gradle/
+
+# STS
+/**/.apt_generated
+/**/.factorypath
+/**/.springBeans
 
 # Webapp
 /**/src/main/webapp/WEB-INF/classes/
@@ -31,3 +43,7 @@ out/
 build/
 bin/
 logs/
+dist/
+
+# rebel.xml
+/**/rebel.xml

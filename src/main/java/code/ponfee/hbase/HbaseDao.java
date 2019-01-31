@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -101,7 +102,8 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
     private static Logger logger = LoggerFactory.getLogger(HbaseDao.class);
 
-    private static final Map<Class<? extends Serializer>, Serializer> REGISTERED_SERIALIZER = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Class<? extends Serializer>, Serializer> REGISTERED_SERIALIZER = 
+        new ConcurrentHashMap<>();
 
     //private static final DateProvider PROVIDER = DateProvider.CURRENT;
     private static final DateProvider PROVIDER = DateProvider.LATEST;
