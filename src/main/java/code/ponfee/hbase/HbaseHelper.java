@@ -24,7 +24,6 @@ import code.ponfee.commons.collect.ByteArrayWrapper;
 public class HbaseHelper {
 
     private static final int DEFAULT_PARTITION_COUNT = 100;
-    public static final byte[] EMPTY_BYTES = {}; // new byte[0]
 
     public static String partition(Object source) {
         return partition(source, DEFAULT_PARTITION_COUNT);
@@ -58,21 +57,11 @@ public class HbaseHelper {
         return paddingRowKey(rowKeyPrefix, paddingLength, (byte) 0xFF);
     }
 
-    private static byte[] paddingRowKey(String rowKeyPrefix, 
-                                        int paddingLength, byte padding) {
-        byte[] rowKeyBytes = Bytes.toBytes(rowKeyPrefix);
-        int fromIndex = rowKeyBytes.length;
-        int toIndex = fromIndex + paddingLength;
-        rowKeyBytes = Arrays.copyOf(rowKeyBytes, toIndex);
-        Arrays.fill(rowKeyBytes, fromIndex, toIndex, padding);
-        return rowKeyBytes;
-    }
-
     public static byte[] toBytes(String str) {
         if (str == null) {
             return null;
         } else if (str.isEmpty()) {
-            return EMPTY_BYTES;
+            return code.ponfee.commons.util.Bytes.EMPTY_BYTES;
         } else {
             return Bytes.toBytes(str);
         }
@@ -97,12 +86,26 @@ public class HbaseHelper {
             }
         } else if (obj instanceof Date) {
             return Bytes.toBytes(((Date) obj).getTime());
+        } else if (obj instanceof Enum<?>) {
+            return code.ponfee.commons.util.Bytes.fromInt(((Enum<?>) obj).ordinal());
         } else {
             String str; // first to string and then to byte array
             if (isEmpty(str = obj.toString())) {
-                return EMPTY_BYTES;
+                return code.ponfee.commons.util.Bytes.EMPTY_BYTES;
             }
             return Bytes.toBytes(str);
         }
     }
+
+    // ---------------------------------------------------------------private methods
+    private static byte[] paddingRowKey(String rowKeyPrefix, 
+                                        int paddingLength, byte padding) {
+        byte[] rowKeyBytes = Bytes.toBytes(rowKeyPrefix);
+        int fromIndex = rowKeyBytes.length;
+        int toIndex = fromIndex + paddingLength;
+        rowKeyBytes = Arrays.copyOf(rowKeyBytes, toIndex);
+        Arrays.fill(rowKeyBytes, fromIndex, toIndex, padding);
+        return rowKeyBytes;
+    }
+
 }

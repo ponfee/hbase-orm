@@ -55,10 +55,10 @@ public class PageQueryBuilder {
 
     private PageQueryBuilder(int pageSize, PageSortOrder sortOrder) {
         Preconditions.checkArgument(
-            pageSize > 0, "pageSize[" + pageSize + "] must be greater than 0."
+            pageSize > 0, "PageSize[" + pageSize + "] must be greater than 0."
         );
         Preconditions.checkArgument(
-            sortOrder != null, "sortOrder cannot be null."
+            sortOrder != null, "SortOrder cannot be null."
         );
         this.pageSize = pageSize;
         this.sortOrder = sortOrder;
