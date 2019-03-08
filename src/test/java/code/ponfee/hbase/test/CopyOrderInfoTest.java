@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.junit.Assert;
 import org.junit.Test;
 
 import code.ponfee.hbase.BaseTest;
@@ -24,6 +25,7 @@ public class CopyOrderInfoTest extends BaseTest<CopyOrderInfoDao> {
 
     @Test
     public void tableExists() {
+        Assert.assertTrue(getBean().tableExists());
         System.out.println(getBean().tableExists());
     }
 

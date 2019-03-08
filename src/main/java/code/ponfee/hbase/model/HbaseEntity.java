@@ -5,7 +5,7 @@ import java.io.Serializable;
 import code.ponfee.hbase.annotation.HbaseField;
 
 /**
- * the Entity Class for mapped by hbase table
+ * The Entity Class for mapped by hbase table
  * 
  * @author Ponfee
  * @param <R> the row key type
