@@ -256,9 +256,9 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
             return Collections.emptyList();
         }
 
-        return from.stream().map(
-            f -> convert(f, action)
-        ).collect(Collectors.toList());
+        return from.stream()
+                   .map(f -> convert(f, action))
+                   .collect(Collectors.toList());
     }
 
     // ------------------------------------------------------------------config and connection
