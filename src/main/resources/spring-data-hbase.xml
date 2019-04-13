@@ -22,7 +22,7 @@
       fs.default.name=hdfs://192.168.1.100:9001
      -->
     <hdp:configuration id="hadoopConfiguration">
-       zookeeper.znode.parent=${zk.znode.parent}
+       zookeeper.znode.parent=${zookeeper.znode.parent}
        fs.hdfs.impl=org.apache.hadoop.hdfs.DistributedFileSystem
        hbase.rpc.timeout=60000
        hbase.ipc.socket.timeout=60000
@@ -35,7 +35,7 @@
     </hdp:configuration>
 
     <hdp:hbase-configuration id="hbaseConfiguration" configuration-ref="hadoopConfiguration"
-                             zk-quorum="${hbase.zk.quorum}" zk-port="${hbase.zk.port}" 
+                             zk-quorum="${hbase.zookeeper.quorum}" zk-port="${hbase.zookeeper.property.clientPort}" 
                              delete-connection="false" stop-proxy="false" />
 
     <bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate"
