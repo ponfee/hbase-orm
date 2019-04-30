@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,6 +27,11 @@ import code.ponfee.hbase.other.ExtendsHbaseMapDao;
 public class HbaeDaoMapTest extends BaseTest<ExtendsHbaseMapDao> {
 
     private static final int PAGE_SIZE = 11;
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("hadoop.home.dir", "D:\\Program Files\\hadoop-common-bin-master\\2.7.3");
+    }
 
     @Test
     @Ignore
