@@ -70,7 +70,7 @@ public class HbaeDaoEntityTest extends BaseTest<ExtendsHbaseEntityDao>{
                 default:
                     break;
             }
-            entity.setBirthday(Dates.random(Dates.toDate("20000101", "yyyyMMdd")));
+            entity.setBirthday(Dates.random(Dates.ofMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
             entity.buildRowKey();
             batch.add(entity);
         }

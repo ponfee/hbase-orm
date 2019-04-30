@@ -23,12 +23,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -102,8 +101,8 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
     private static Logger logger = LoggerFactory.getLogger(HbaseDao.class);
 
-    private static final ConcurrentMap<Class<? extends Serializer>, Serializer> REGISTERED_SERIALIZER = 
-        new ConcurrentHashMap<>();
+    private static final Map<Class<? extends Serializer>, Serializer> REGISTERED_SERIALIZER = 
+        new /*ConcurrentHashMap*/HashMap<>();
 
     //private static final DateProvider PROVIDER = DateProvider.CURRENT;
     private static final DateProvider PROVIDER = DateProvider.LATEST;
@@ -1092,13 +1091,38 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     public static Serializer getSerializer(Class<? extends Serializer> clazz) {
         Serializer serizlizer = REGISTERED_SERIALIZER.get(clazz);
         if (serizlizer == null) {
-            try {
-                REGISTERED_SERIALIZER.put(clazz, serizlizer = clazz.newInstance());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            synchronized (REGISTERED_SERIALIZER) {
+                if ((serizlizer = REGISTERED_SERIALIZER.get(clazz)) == null) {
+                    try {
+                        serizlizer = clazz.newInstance();
+                    } catch (Exception e) {
+                        serizlizer = NoopSerializer.INSTANCE;
+                    }
+                    REGISTERED_SERIALIZER.put(clazz, serizlizer);
+                }
             }
         }
-        return serizlizer;
+
+        if (serizlizer == NoopSerializer.INSTANCE) {
+            throw new RuntimeException("Cannot create instance: " + clazz.getName());
+        } else {
+            return serizlizer;
+        }
     }
 
+    private static final class NoopSerializer extends Serializer {
+        private static final NoopSerializer INSTANCE = new NoopSerializer();
+
+        private NoopSerializer() {}
+
+        @Override
+        protected byte[] serialize0(Object obj, boolean compress) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected <T> T deserialize0(byte[] bytes, Class<T> clazz, boolean compress) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
