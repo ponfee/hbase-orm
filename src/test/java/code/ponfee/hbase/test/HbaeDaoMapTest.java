@@ -54,7 +54,7 @@ public class HbaeDaoMapTest extends BaseTest<ExtendsHbaseMapDao> {
             ExtendsHbaseMap map = new ExtendsHbaseMap();
             map.put("age", 1 + ThreadLocalRandom.current().nextInt(60));
             map.put("name", RandomStringUtils.randomAlphanumeric(5));
-            map.put("rowKey", Dates.format(Dates.random(date), "yyyyMMddHHmmss"));
+            map.put("rowKey", Dates.format(Dates.random(Dates.ofMillis(0), date), "yyyyMMddHHmmss"));
             batch.add(map);
         }
         consoleJson(getBean().put(batch));
