@@ -68,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.hadoop.hbase.HbaseTemplate;
 import org.springframework.data.hadoop.hbase.RowMapper;
+import org.springframework.objenesis.ObjenesisHelper;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableBiMap;
@@ -77,6 +78,7 @@ import code.ponfee.commons.cache.DateProvider;
 import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.model.PageSortOrder;
+import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
 import code.ponfee.commons.reflect.ClassUtils;
 import code.ponfee.commons.reflect.Fields;
@@ -107,7 +109,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     //private static final DateProvider PROVIDER = DateProvider.CURRENT;
     private static final DateProvider PROVIDER = DateProvider.LATEST;
 
-    private final Class<T> classType;
+    private final Class<T> beanType;
     private final RowMapper<T> rowMapper;
     private final Class<R> rowKeyType;
     private final boolean wrappedBytesRowKey;
@@ -122,20 +124,12 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     @SuppressWarnings("unchecked")
     public HbaseDao() {
         Class<?> clazz = this.getClass();
-        this.classType = GenericUtils.getActualTypeArgument(clazz, 0);
-        if (   !HbaseEntity.class.isAssignableFrom(this.classType)
-            && !HbaseMap.class.isAssignableFrom(this.classType)
+        this.beanType = GenericUtils.getActualTypeArgument(clazz, 0);
+        if (   !HbaseEntity.class.isAssignableFrom(this.beanType)
+            && !HbaseMap.class.isAssignableFrom(this.beanType)
         ) {
             throw new UnsupportedOperationException(
                 "The class generic type must be HbaseEntity or HbaseMap"
-            );
-        }
-
-        try {
-            this.classType.getConstructor().newInstance();
-        } catch (Exception e) {
-            throw new UnsupportedOperationException(
-                "The class " + clazz.getSimpleName() + " new instance occur error."
             );
         }
 
@@ -144,7 +138,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                 return null;
             }
 
-            T bean = this.classType.getConstructor().newInstance();
+            T bean = ObjenesisHelper.newInstance(this.beanType);
             bean.setRowKey(deserialRowKey(result.getRow()));
             // CellUtil.cloneFamily(cell), cell.getTimestamp(), cell.getSequenceId()
             if (bean instanceof HbaseEntity) {
@@ -159,7 +153,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                 ));
             } else {
                 throw new UnsupportedOperationException(
-                    "Unsupported type: " + this.classType.getCanonicalName()
+                    "Unsupported type: " + this.beanType.getCanonicalName()
                 );
             }
             return bean;
@@ -178,7 +172,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         this.wrappedBytesRowKey = flag;
 
         this.fieldMap = ImmutableBiMap.<String, Field> builder().putAll(
-            ClassUtils.listFields(this.classType).stream().filter(f -> {
+            ClassUtils.listFields(this.beanType).stream().filter(f -> {
                 HbaseField hf = f.getAnnotation(HbaseField.class);
                 return hf == null || !hf.ignore();
             }).collect(
@@ -193,7 +187,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         // table name, if not defined in annotation then 
         // defaults the class name lower underscore name
-        HbaseTable ht = this.classType.getDeclaredAnnotation(HbaseTable.class);
+        HbaseTable ht = this.beanType.getDeclaredAnnotation(HbaseTable.class);
         String tableName = (ht != null && isNotEmpty(ht.tableName())) 
                            ? ht.tableName()
                            : LOWER_CAMEL.to(LOWER_UNDERSCORE, clazz.getSimpleName());
@@ -221,23 +215,18 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <F> T convert(F from, Consumer<T> action) {
         T to;
-        if (this.classType.isInstance(from)) {
+        if (this.beanType.isInstance(from)) {
             to = (T) from;
         } else {
-            try {
-                to = this.classType.getConstructor().newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            if (Map.class.isAssignableFrom(this.classType)) {
+            to = ObjenesisHelper.newInstance(this.beanType);
+            if (Map.class.isAssignableFrom(this.beanType)) {
                 if (Map.class.isInstance(from)) {
                     ((Map) to).putAll((Map<?, ?>) from);
                 } else {
-                    ((Map) to).putAll(CglibUtils.bean2map(from)); // ObjectUtils.bean2map
+                    ((Map) to).putAll(BeanMaps.CGLIB.toMap(from));
                 }
             } else if (Map.class.isInstance(from)) {
-                CglibUtils.map2bean((Map) from, to); // ObjectUtils.map2bean
+                BeanMaps.CGLIB.copy((Map) from, to);
             } else {
                 CglibUtils.copyProperties(from, to);
             }
@@ -730,7 +719,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                     put = buildPut(rowKey, family, ts, (Map<String, Object>) obj);
                 } else {
                     throw new UnsupportedOperationException(
-                        "Unsupported type: " + classType.getCanonicalName()
+                        "Unsupported type: " + beanType.getCanonicalName()
                     );
                 }
                 if (!put.isEmpty()) {

@@ -92,7 +92,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
     }
 
     /**
-     * Batch copy for page
+     * Batch copy for page, copy from one table to another table
      *
      * @param query the page query
      * @param target the target HbaseDao
@@ -119,6 +119,14 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
         return put(data, batchSize, taskExecutor.getThreadPoolExecutor());
     }
 
+    /**
+     * Batch put data to hbase use ThreadPoolExecutor
+     * 
+     * @param data the data that will be put hbase
+     * @param batchSize the put batch size
+     * @param threadPoolExecutor the threadPoolExecutor
+     * @return {@code true} put success
+     */
     public boolean put(List<T> data, int batchSize, ThreadPoolExecutor threadPoolExecutor) {
         CompletionService<Boolean> service = new ExecutorCompletionService<>(threadPoolExecutor);
         int round = 0;
@@ -133,6 +141,12 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
     }
 
     // ------------------------------------------------------------------------query all
+    /**
+     * Page query all data from hbase
+     * 
+     * @param query the PageQueryBuilder
+     * @param consumer the BiConsumer, the first arg is pageNum, the second arg is this page data list
+     */
     public <E> void scrollQuery(PageQueryBuilder query, BiConsumer<Integer, List<T>> consumer) {
         query.requireRowNum(false);
         int pageNum = 0, size; List<T> page;
@@ -208,7 +222,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
     /**
      * 异步批量删除
      */
-    private static final class AsnycBatchDelete implements Callable<Boolean> {
+    private static class AsnycBatchDelete implements Callable<Boolean> {
         final HbaseTemplate template;
         final String tableName;
         final List<ByteArrayWrapper> rowKeys;
@@ -239,7 +253,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
      * @param <E>
      * @param <U>
      */
-    private static final class AsnycBatchPut<E extends HbaseBean<U>, U extends Serializable & Comparable<? super U>> 
+    private static class AsnycBatchPut<E extends HbaseBean<U>, U extends Serializable & Comparable<? super U>> 
         implements Callable<Boolean> {
         final HbaseDao<E, U> dao;
         final List<E> data;
