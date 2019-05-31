@@ -74,7 +74,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 
-import code.ponfee.commons.cache.DateProvider;
+import code.ponfee.commons.cache.TimestampProvider;
 import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.model.PageSortOrder;
@@ -107,7 +107,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         new /*ConcurrentHashMap*/HashMap<>();
 
     //private static final DateProvider PROVIDER = DateProvider.CURRENT;
-    private static final DateProvider PROVIDER = DateProvider.LATEST;
+    private static final TimestampProvider PROVIDER = TimestampProvider.LATEST;
 
     private final Class<T> beanType;
     private final RowMapper<T> rowMapper;
