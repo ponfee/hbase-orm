@@ -106,7 +106,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     private static final Map<Class<? extends Serializer>, Serializer> REGISTERED_SERIALIZER = 
         new /*ConcurrentHashMap*/HashMap<>();
 
-    //private static final DateProvider PROVIDER = DateProvider.CURRENT;
+    //private static final TimestampProvider PROVIDER = TimestampProvider.CURRENT;
     private static final TimestampProvider PROVIDER = TimestampProvider.LATEST;
 
     private final Class<T> beanType;
