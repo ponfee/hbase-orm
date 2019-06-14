@@ -123,7 +123,8 @@ public interface HbaseBean<R extends Comparable<? super R> & Serializable>
     }
 
     default String toString0() {
-        return this.getClass().getName() + "@" + this.getRowKey();
+        return new StringBuilder(this.getClass().getName())
+            .append("@").append(this.getRowKey()).toString();
         //return new ToStringBuilder(this).toString();
     }
 

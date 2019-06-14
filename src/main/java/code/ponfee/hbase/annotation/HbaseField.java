@@ -30,7 +30,7 @@ public @interface HbaseField {
     /** the column-level hbase family name. */
     String family() default "";
 
-    /** the hbase qualifier name. */
+    /** the hbase qualifier name, default LOWER_CAMEL.to(field.getName()). */
     String qualifier() default "";
 
     /** the hbase value format, to compatible a field has 

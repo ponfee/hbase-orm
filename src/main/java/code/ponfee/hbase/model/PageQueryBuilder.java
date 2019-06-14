@@ -51,7 +51,7 @@ public class PageQueryBuilder {
     private Map<String, String[]> famQuaes; // query the spec family and qualifier
     private final FilterList filters = new FilterList(Operator.MUST_PASS_ALL);
 
-    private boolean requireRowNum = true; // whether include row number
+    private boolean requireRowNum = true; // query result whether include row number
 
     private PageQueryBuilder(int pageSize, PageSortOrder sortOrder) {
         Preconditions.checkArgument(
