@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.model.PageSortOrder;
+import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.ObjectUtils;
 
@@ -41,7 +41,7 @@ import code.ponfee.commons.util.ObjectUtils;
 public class PageQueryBuilder {
 
     private final int pageSize;
-    private final PageSortOrder sortOrder;
+    private final SortOrder sortOrder;
 
     private Object startRowKey;
     private Boolean inclusiveStartRow;
@@ -53,7 +53,7 @@ public class PageQueryBuilder {
 
     private boolean requireRowNum = true; // query result whether include row number
 
-    private PageQueryBuilder(int pageSize, PageSortOrder sortOrder) {
+    private PageQueryBuilder(int pageSize, SortOrder sortOrder) {
         Preconditions.checkArgument(
             pageSize > 0, "PageSize[" + pageSize + "] must be greater than 0."
         );
@@ -65,11 +65,11 @@ public class PageQueryBuilder {
     }
 
     public static PageQueryBuilder newBuilder(int pageSize) {
-        return new PageQueryBuilder(pageSize, PageSortOrder.ASC);
+        return new PageQueryBuilder(pageSize, SortOrder.ASC);
     }
 
     public static PageQueryBuilder newBuilder(
-        int pageSize, PageSortOrder sortOrder) {
+        int pageSize, SortOrder sortOrder) {
         return new PageQueryBuilder(pageSize, sortOrder);
     }
 
@@ -310,8 +310,8 @@ public class PageQueryBuilder {
         return requireRowNum;
     }
 
-    public PageSortOrder sortOrder() {
-        return Optional.ofNullable(sortOrder).orElse(PageSortOrder.ASC);
+    public SortOrder sortOrder() {
+        return Optional.ofNullable(sortOrder).orElse(SortOrder.ASC);
     }
 
     public boolean inclusiveStartRow() {

@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import code.ponfee.commons.model.PageSortOrder;
+import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.util.Dates;
 import code.ponfee.hbase.BaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
@@ -103,7 +103,7 @@ public class HbaeDaoMapTest extends BaseTest<ExtendsHbaseMapDao> {
 
     @Test
     public void nextPage() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.DESC);
         query.requireRowNum(false);
         //query.rowKeyOnly();
         consoleJson(getBean().nextPage(query));
@@ -111,7 +111,7 @@ public class HbaeDaoMapTest extends BaseTest<ExtendsHbaseMapDao> {
 
     @Test
     public void nextPageAll() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(111, PageSortOrder.ASC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(111, SortOrder.ASC);
         query.startRowKey("00000000");
         //query.setRowKeyPrefix("fu_ponfee_2009");
         //Set<String> set = new TreeSet<>();
@@ -134,7 +134,7 @@ public class HbaeDaoMapTest extends BaseTest<ExtendsHbaseMapDao> {
     
     @Test
     public void previousPageDesc() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.DESC);
         query.startRowKey("20050828085930");
         consoleJson(getBean().previousPage(query));
     }

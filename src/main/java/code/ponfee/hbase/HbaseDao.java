@@ -77,7 +77,7 @@ import com.google.common.collect.ImmutableList;
 import code.ponfee.commons.cache.TimestampProvider;
 import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.model.PageSortOrder;
+import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.reflect.CglibUtils;
 import code.ponfee.commons.reflect.ClassUtils;
@@ -554,11 +554,11 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
     // ------------------------------------------------------------------find for page
     public List<T> nextPage(PageQueryBuilder query) {
-        return page(query, true, query.sortOrder() != PageSortOrder.ASC);
+        return page(query, true, query.sortOrder() != SortOrder.ASC);
     }
 
     public List<T> previousPage(PageQueryBuilder query) {
-        return page(query, false, query.sortOrder() == PageSortOrder.ASC);
+        return page(query, false, query.sortOrder() == SortOrder.ASC);
     }
 
     // ------------------------------------------------------------------get the last|first row
@@ -831,7 +831,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
     // ------------------------------------------------------------------private methods
     private Object nearRowKey(String rowKeyPrefix, Object startRowKey, boolean isNext) {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(1, PageSortOrder.ASC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(1, SortOrder.ASC);
         query.prefixRowKey(toBytes(rowKeyPrefix));
         query.startRowKey(startRowKey);
         List<T> result = isNext ? nextPage(query) : previousPage(query);

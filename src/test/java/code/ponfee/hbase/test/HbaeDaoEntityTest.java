@@ -16,7 +16,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.model.PageSortOrder;
+import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.util.Dates;
 import code.ponfee.hbase.BaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
@@ -124,7 +124,7 @@ public class HbaeDaoEntityTest extends BaseTest<ExtendsHbaseEntityDao>{
 
     @Test
     public void nextPage() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(5, PageSortOrder.ASC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(5, SortOrder.ASC);
         query.addColumns("cf1",  "first_name");
         query.addColumns("cf1",  "age");
         //query.startRowKey("fu_ponfee_20070309");
@@ -135,7 +135,7 @@ public class HbaeDaoEntityTest extends BaseTest<ExtendsHbaseEntityDao>{
 
     @Test
     public void nextPageAll() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.ASC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.ASC);
         query.addColumns("cf1",  "first_name");
         //Set<String> set = new TreeSet<>();
         Set<String> set = new LinkedHashSet<>();
@@ -150,14 +150,14 @@ public class HbaeDaoEntityTest extends BaseTest<ExtendsHbaseEntityDao>{
 
     @Test
     public void previousPage() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(5, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(5, SortOrder.DESC);
         query.startRowKey("fu_ponfee_20121019");
         consoleJson(getBean().previousPage(query));
     }
 
     @Test
     public void previousPageAll() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(11, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(11, SortOrder.DESC);
         //query.setStartRow("fu_ponfee_20181128");
         //query.setFamQuaes(ImmutableMap.of("cf1", new String[] { "first_name" }));
         List<ExtendsHbaseEntity> data = new ArrayList<>();

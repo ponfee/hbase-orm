@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import code.ponfee.commons.model.PageSortOrder;
+import code.ponfee.commons.model.SortOrder;
 import code.ponfee.hbase.BaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
 import code.ponfee.hbase.other.BasOrderInfo;
@@ -73,7 +73,7 @@ public class BasOrderInfoTest extends BaseTest<BasOrderInfoDao> {
 
     @Test
     public void nextPage() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.DESC);
         consoleJson(getBean().nextPage(query));
     }
 
@@ -105,7 +105,7 @@ public class BasOrderInfoTest extends BaseTest<BasOrderInfoDao> {
 
     @Test
     public void nextPageAllDESC() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.DESC);
         query.addColumns("cf1", "name" );
         List<BasOrderInfo> data = new ArrayList<>();
         int count = 1;
@@ -138,7 +138,7 @@ public class BasOrderInfoTest extends BaseTest<BasOrderInfoDao> {
     
     @Test
     public void previousPageDesc() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.DESC);
         query.startRowKey("name85");
         consoleJson(getBean().previousPage(query));
     }
@@ -172,7 +172,7 @@ public class BasOrderInfoTest extends BaseTest<BasOrderInfoDao> {
 
     @Test
     public void previousPageAllDesc() {
-        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, PageSortOrder.DESC);
+        PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.DESC);
         query.addColumns("cf1",  "name" );
         query.startRowKey("name10");
         List<BasOrderInfo> data = new ArrayList<>();
