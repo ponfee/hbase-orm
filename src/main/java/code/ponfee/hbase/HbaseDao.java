@@ -614,7 +614,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         return template.execute(tableName, table -> {
             Put put = new Put(toBytes(rowKey));
             put.addColumn(toBytes(familyName), toBytes(qualifier), 
-                          PROVIDER.now(), toBytes(value));
+                          PROVIDER.get(), toBytes(value));
             table.put(put);
             return true;
         });
@@ -625,7 +625,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         return template.execute(tableName, table -> {
             Put put = new Put(toBytes(rowKey));
             byte[] family = toBytes(familyName);
-            long ts = PROVIDER.now();
+            long ts = PROVIDER.get();
             for (int n = qualifiers.length, i = 0; i < n; i++) {
                 put.addColumn(family, toBytes(qualifiers[i]), 
                               ts, toBytes(values[i]));
@@ -640,7 +640,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                        String familyName, Map<String, Object> data) {
         Preconditions.checkArgument(isNotEmpty(rowKey));
         return template.execute(tableName, table -> {
-            Put put = buildPut(toBytes(rowKey), toBytes(familyName), PROVIDER.now(), data);
+            Put put = buildPut(toBytes(rowKey), toBytes(familyName), PROVIDER.get(), data);
             if (put.isEmpty()) {
                 logger.warn("Empty put data.");
                 return false;
@@ -660,7 +660,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         return template.execute(tableName, table -> {
             List<Put> batch = new ArrayList<>(list.size());
             byte[] family = toBytes(familyName);
-            long ts = PROVIDER.now(); Object rowKey;
+            long ts = PROVIDER.get(); Object rowKey;
             for (Map<String, Object> data : list) {
                 if ((rowKey = data.get(ROW_KEY_NAME)) == null) {
                     continue;
@@ -693,7 +693,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         return template.execute(tableName, table -> {
             List<Put> batch = new ArrayList<>(data.size());
-            long ts = PROVIDER.now(); byte[] fam = toBytes(familyName), rowKey;
+            long ts = PROVIDER.get(); byte[] fam = toBytes(familyName), rowKey;
             for (T obj : data) {
                 if (ArrayUtils.isEmpty(rowKey = serialRowKey(obj.getRowKey()))) {
                     continue;

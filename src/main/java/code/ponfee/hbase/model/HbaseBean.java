@@ -2,6 +2,7 @@ package code.ponfee.hbase.model;
 
 import java.beans.Transient;
 import java.io.Serializable;
+import java.util.Objects;
 
 import code.ponfee.hbase.HbaseHelper;
 
@@ -45,6 +46,7 @@ public interface HbaseBean<R extends Comparable<? super R> & Serializable>
     //int getTimestamp();
     //int getSequenceId();
 
+    // ----------------------------------------------default methods
     /**
      * Returns the data object hbase rowkey, 
      * sub class can override this methods
@@ -63,9 +65,7 @@ public interface HbaseBean<R extends Comparable<? super R> & Serializable>
      */
     @Transient
     default String getRowKeyAsString() {
-        R rowKey;
-        return (rowKey = getRowKey()) == null
-               ? null : rowKey.toString();
+        return Objects.toString(getRowKey(), null);
     }
 
     /**
