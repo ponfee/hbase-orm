@@ -96,7 +96,7 @@ public class PageQueryBuilder {
     }
 
     public void addColumns(@Nonnull String family, String... quaes) {
-        Assert.notNull(family, "family cannot be empty.");
+        Assert.notNull(family, "Column family cannot be null.");
         if (famQuaes == null) {
             famQuaes = new HashMap<>();
         }
