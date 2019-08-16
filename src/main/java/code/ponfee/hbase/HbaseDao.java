@@ -161,15 +161,15 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         // row key type
         this.rowKeyType = GenericUtils.getActualTypeArgument(clazz, 1);
-        boolean flag;
+        boolean wrapped;
         try {
             this.rowKeyType.getConstructor(byte[].class)
                            .newInstance(new byte[] { 0x00 });
-            flag = true; // is wrapped
-        } catch (Exception e) {
-            flag = false; // not wrapped
+            wrapped = true;
+        } catch (Exception ignored) {
+            wrapped = false;
         }
-        this.wrappedBytesRowKey = flag;
+        this.wrappedBytesRowKey = wrapped;
 
         this.fieldMap = ImmutableBiMap.<String, Field> builder().putAll(
             ClassUtils.listFields(this.beanType).stream().filter(f -> {
@@ -851,7 +851,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         if (CollectionUtils.isNotEmpty(result) && !inclusiveStartRow 
             && Arrays.equals(toBytes(startRow), result.get(0).getRowKeyAsBytes())) {
-            result = result.subList(1, result.size()); // first is the start row
+            result = result.subList(1, result.size()); // the first is start row
         }
         return result;
     }

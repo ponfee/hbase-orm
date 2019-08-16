@@ -37,7 +37,7 @@ public class HbaseHelper {
         }
 
         int salt = Math.abs(source.hashCode());
-        return StringUtils.leftPad(String.valueOf(salt % partition), len, '0');
+        return StringUtils.leftPad(Integer.toString(salt % partition), len, '0');
     }
 
     // -----------------------------------------------------------next row key
