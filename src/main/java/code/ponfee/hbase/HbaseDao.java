@@ -663,7 +663,9 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
             long ts = PROVIDER.get(); Object rowKey;
             for (Map<String, Object> data : list) {
                 if ((rowKey = data.get(ROW_KEY_NAME)) == null) {
-                    continue;
+                    throw new UnsupportedOperationException(
+                        "The map data must a key name of 'rowKey' mapping hbase row key."
+                    );
                 }
                 Put put = buildPut(toBytes(rowKey.toString()), family, ts, data);
                 if (!batch.isEmpty()) {
@@ -696,7 +698,9 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
             long ts = PROVIDER.get(); byte[] fam = toBytes(familyName), rowKey;
             for (T obj : data) {
                 if (ArrayUtils.isEmpty(rowKey = serialRowKey(obj.getRowKey()))) {
-                    continue;
+                    throw new UnsupportedOperationException(
+                        "Cannot get rowKey data or rowKey data is empty."
+                    );
                 }
 
                 Put put;
