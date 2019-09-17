@@ -76,6 +76,7 @@ import com.google.common.collect.ImmutableList;
 
 import code.ponfee.commons.cache.TimestampProvider;
 import code.ponfee.commons.collect.ByteArrayWrapper;
+import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.reflect.BeanMaps;
@@ -263,19 +264,11 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     }
 
     public final void closeConnection(Connection conn) {
-        if (conn != null) try {
-            conn.close();
-        } catch (Exception e) {
-            logger.error("Close hbase connection occur error.", e);
-        }
+        Closeables.closeLog(conn, "Close hbase connection occur error.");
     }
 
     public final void closeTable(Table table) {
-        if (table != null) try {
-            table.close();
-        } catch (Exception e) {
-            logger.error("Close hbase table occur error.", e);
-        }
+        Closeables.closeLog(table, "Close hbase table occur error.");
     }
 
     // ------------------------------------------------------------------admin operations
