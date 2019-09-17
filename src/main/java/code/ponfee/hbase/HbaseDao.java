@@ -226,7 +226,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                     ((Map) to).putAll(BeanMaps.CGLIB.toMap(from));
                 }
             } else if (Map.class.isInstance(from)) {
-                BeanMaps.CGLIB.copy((Map) from, to);
+                BeanMaps.CGLIB.copyFromMap((Map) from, to);
             } else {
                 CglibUtils.copyProperties(from, to);
             }
