@@ -28,7 +28,6 @@ import com.google.common.base.Preconditions;
 
 import code.ponfee.commons.collect.Collects;
 import code.ponfee.commons.model.SortOrder;
-import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.ObjectUtils;
 
 /**
@@ -139,7 +138,7 @@ public class PageQueryBuilder {
 
     public PageQueryBuilder exists(String family, String qualifier) {
         // must not be empty value
-        SingleColumnValueFilter filter = equals(family, qualifier, Bytes.EMPTY_BYTES, false);
+        SingleColumnValueFilter filter = equals(family, qualifier, ArrayUtils.EMPTY_BYTE_ARRAY, false);
         filter.setFilterIfMissing(true); // 若该列不存在，则过滤掉
         this.filters.addFilter(filter);
         return this;
@@ -147,7 +146,7 @@ public class PageQueryBuilder {
 
     public PageQueryBuilder notExists(String family, String qualifier) {
         // must be empty value
-        SingleColumnValueFilter filter = equals(family, qualifier, Bytes.EMPTY_BYTES, true);
+        SingleColumnValueFilter filter = equals(family, qualifier, ArrayUtils.EMPTY_BYTE_ARRAY, true);
         filter.setFilterIfMissing(false); // 若该列不存在也会包含在结果集中
         this.filters.addFilter(filter);
         return this;

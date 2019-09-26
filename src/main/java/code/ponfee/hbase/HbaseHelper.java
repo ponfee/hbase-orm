@@ -61,7 +61,7 @@ public class HbaseHelper {
         if (str == null) {
             return null;
         } else if (str.isEmpty()) {
-            return code.ponfee.commons.util.Bytes.EMPTY_BYTES;
+            return ArrayUtils.EMPTY_BYTE_ARRAY;
         } else {
             return Bytes.toBytes(str);
         }
@@ -87,11 +87,11 @@ public class HbaseHelper {
         } else if (obj instanceof Date) {
             return Bytes.toBytes(((Date) obj).getTime());
         } else if (obj instanceof Enum<?>) {
-            return code.ponfee.commons.util.Bytes.fromInt(((Enum<?>) obj).ordinal());
+            return Bytes.toBytes(((Enum<?>) obj).ordinal());
         } else {
             String str; // first to string and then to byte array
             if (isEmpty(str = obj.toString())) {
-                return code.ponfee.commons.util.Bytes.EMPTY_BYTES;
+                return ArrayUtils.EMPTY_BYTE_ARRAY;
             }
             return Bytes.toBytes(str);
         }
