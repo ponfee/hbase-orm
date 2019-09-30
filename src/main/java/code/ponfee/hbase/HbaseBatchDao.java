@@ -183,7 +183,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
             rowKeys = template.find(tableName, scan, results -> {
                 List<ByteArrayWrapper> list = new LinkedList<>();
                 for (Result result : results) {
-                    list.add(ByteArrayWrapper.create(result.getRow()));
+                    list.add(ByteArrayWrapper.of(result.getRow()));
                 }
                 return list;
             });

@@ -1005,7 +1005,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         }
 
         if (fieldType.isAssignableFrom(ByteArrayWrapper.class)) {
-            Fields.put(target, field, ByteArrayWrapper.create(value));
+            Fields.put(target, field, ByteArrayWrapper.of(value));
             return;
         }
         if (fieldType.isAssignableFrom(ByteBuffer.class)) {
