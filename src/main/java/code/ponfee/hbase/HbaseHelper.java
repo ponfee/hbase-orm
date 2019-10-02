@@ -87,7 +87,8 @@ public class HbaseHelper {
         } else if (obj instanceof Date) {
             return Bytes.toBytes(((Date) obj).getTime());
         } else if (obj instanceof Enum<?>) {
-            return Bytes.toBytes(((Enum<?>) obj).ordinal());
+            //return Bytes.toBytes(((Enum<?>) obj).ordinal());
+            return Bytes.toBytes(((Enum<?>) obj).name());
         } else {
             String str; // first to string and then to byte array
             if (isEmpty(str = obj.toString())) {
