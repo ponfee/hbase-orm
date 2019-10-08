@@ -264,11 +264,11 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     }
 
     public final void closeConnection(Connection conn) {
-        Closeables.closeLog(conn, "Close hbase connection occur error.");
+        Closeables.log(conn, "Close hbase connection occur error.");
     }
 
     public final void closeTable(Table table) {
-        Closeables.closeLog(table, "Close hbase table occur error.");
+        Closeables.log(table, "Close hbase table occur error.");
     }
 
     // ------------------------------------------------------------------admin operations
