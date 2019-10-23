@@ -4,6 +4,8 @@ import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
 import code.ponfee.hbase.HbaseHelper;
 
 /**
@@ -80,20 +82,11 @@ public interface HbaseBean<R extends Comparable<? super R> & Serializable>
     }
 
     // -------------------------------------------Comparable & Object
-    default @Override int compareTo(HbaseBean<R> other) {
-        R tkey, okey;
-        if ((tkey = this.getRowKey()) == null) {
-            return 1; // null rowkey last
-        } else if ( ( other                      == null)
-                 || ( (okey = other.getRowKey()) == null)
-        ) {
-            return -1;
-        } else {
-            return tkey.compareTo(okey);
-        }
-        /*return new CompareToBuilder()
+    @Override
+    default int compareTo(HbaseBean<R> other) {
+        return new CompareToBuilder()
             .append(this.getRowKey(), other.getRowKey())
-            .toComparison();*/
+            .toComparison();
     }
 
     default int hashCode0() {
