@@ -32,4 +32,5 @@ public @interface HbaseTable {
 
     /** row key serializer */
     Class<? extends Serializer> serializer() default ToStringSerializer.class;
+
 }

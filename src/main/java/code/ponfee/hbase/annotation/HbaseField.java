@@ -7,8 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import code.ponfee.commons.serial.NullSerializer;
 import code.ponfee.commons.serial.Serializer;
-import code.ponfee.commons.serial.ToStringSerializer;
 
 /**
  * Entity field mapping to hbase column
@@ -25,7 +25,7 @@ public @interface HbaseField {
     boolean ignore() default false;
 
     /** field value serializer */
-    Class<? extends Serializer> serializer() default ToStringSerializer.class;
+    Class<? extends Serializer> serializer() default NullSerializer.class;
 
     /** the column-level hbase family name. */
     String family() default "";

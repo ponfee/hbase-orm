@@ -1,20 +1,13 @@
 package code.ponfee.hbase;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Date;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.util.Assert;
 
-import code.ponfee.commons.collect.ByteArrayWrapper;
+import code.ponfee.commons.serial.WrappedSerializer;
+import code.ponfee.commons.util.Bytes;
 
 /**
  * Hbase helper
@@ -24,6 +17,7 @@ import code.ponfee.commons.collect.ByteArrayWrapper;
 public class HbaseHelper {
 
     private static final int DEFAULT_PARTITION_COUNT = 100;
+    private static final WrappedSerializer SERIALIZER = WrappedSerializer.WRAPPED_TOSTRING_SERIALIZER;
 
     public static String partition(Object source) {
         return partition(source, DEFAULT_PARTITION_COUNT);
@@ -57,45 +51,16 @@ public class HbaseHelper {
         return paddingRowKey(rowKeyPrefix, paddingLength, (byte) 0xFF);
     }
 
-    public static byte[] toBytes(String str) {
-        if (str == null) {
-            return null;
-        } else if (str.isEmpty()) {
-            return ArrayUtils.EMPTY_BYTE_ARRAY;
-        } else {
-            return Bytes.toBytes(str);
-        }
+    public static byte[] toBytes(String s) {
+        return s == null ? null : s.isEmpty() ? ArrayUtils.EMPTY_BYTE_ARRAY : Bytes.toBytes(s);
     }
 
-    public static byte[] toBytes(Object obj) {
-        if (obj == null) {
-            return null;
-        } else if (obj instanceof byte[]) {
-            return (byte[]) obj;
-        } else if (obj instanceof Byte[]) {
-            return ArrayUtils.toPrimitive((Byte[]) obj);
-        } else if (obj instanceof ByteArrayWrapper) {
-            return ((ByteArrayWrapper) obj).getArray();
-        } else if (obj instanceof ByteBuffer) {
-            return ((ByteBuffer) obj).array();
-        } else if (obj instanceof InputStream) {
-            try (InputStream input = (InputStream) obj) {
-                return IOUtils.toByteArray(input);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (obj instanceof Date) {
-            return Bytes.toBytes(((Date) obj).getTime());
-        } else if (obj instanceof Enum<?>) {
-            //return Bytes.toBytes(((Enum<?>) obj).ordinal());
-            return Bytes.toBytes(((Enum<?>) obj).name());
-        } else {
-            String str; // first to string and then to byte array
-            if (isEmpty(str = obj.toString())) {
-                return ArrayUtils.EMPTY_BYTE_ARRAY;
-            }
-            return Bytes.toBytes(str);
-        }
+    public static byte[] toBytes(Object value) {
+        return SERIALIZER.serialize(value);
+    }
+
+    public static <T> T fromBytes(byte[] bytes, Class<T> clazz) {
+        return SERIALIZER.deserialize(bytes, clazz);
     }
 
     // ---------------------------------------------------------------private methods

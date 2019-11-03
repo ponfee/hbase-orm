@@ -13,12 +13,12 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 
 import code.ponfee.commons.model.SortOrder;
-import code.ponfee.hbase.BaseTest;
+import code.ponfee.hbase.SpringBaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
 import code.ponfee.hbase.other.BasOrderInfo;
 import code.ponfee.hbase.other.BasOrderInfoDao;
 
-public class BasOrderInfoTest extends BaseTest<BasOrderInfoDao> {
+public class BasOrderInfoTest extends SpringBaseTest<BasOrderInfoDao> {
     
     private static final int PAGE_SIZE = 20;
 

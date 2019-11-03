@@ -19,12 +19,12 @@ import com.google.common.collect.Lists;
 
 import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.util.Dates;
-import code.ponfee.hbase.BaseTest;
+import code.ponfee.hbase.SpringBaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
 import code.ponfee.hbase.other.ExtendsHbaseMap;
 import code.ponfee.hbase.other.ExtendsHbaseMapDao;
 
-public class HbaeDaoMapTest extends BaseTest<ExtendsHbaseMapDao> {
+public class HbaeDaoMapTest extends SpringBaseTest<ExtendsHbaseMapDao> {
 
     private static final int PAGE_SIZE = 11;
 
