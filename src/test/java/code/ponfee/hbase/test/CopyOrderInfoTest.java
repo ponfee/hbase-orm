@@ -8,9 +8,9 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
+import code.ponfee.commons.util.Bytes;
 import code.ponfee.hbase.SpringBaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
 import code.ponfee.hbase.other.BasOrderInfoDao;

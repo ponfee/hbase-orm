@@ -108,13 +108,11 @@ public class Column implements java.io.Serializable {
         public static DateBytesConvertor TIMESTAMP = new DateBytesConvertor() {
             @Override
             protected byte[] toBytes0(Date date) {
-                System.out.println(date.getTime());
                 return Bytes.toBytes(date.getTime());
             }
 
             @Override
             protected Date toDate0(byte[] bytes) {
-                System.out.println(Bytes.toLong(bytes));
                 return new Date(Bytes.toLong(bytes));
             }
         };

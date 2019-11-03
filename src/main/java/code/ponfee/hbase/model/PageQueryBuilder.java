@@ -1,6 +1,6 @@
 package code.ponfee.hbase.model;
 
-import static org.apache.hadoop.hbase.util.Bytes.toBytes;
+import static code.ponfee.commons.util.Bytes.toBytes;
 
 import java.util.HashMap;
 import java.util.List;

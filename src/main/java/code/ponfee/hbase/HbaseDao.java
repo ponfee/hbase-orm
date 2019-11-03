@@ -63,7 +63,6 @@ import org.apache.hadoop.hbase.filter.PageFilter;
 import org.apache.hadoop.hbase.filter.PrefixFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.hadoop.hbase.HbaseTemplate;
@@ -84,6 +83,7 @@ import code.ponfee.commons.reflect.Fields;
 import code.ponfee.commons.reflect.GenericUtils;
 import code.ponfee.commons.serial.NullSerializer;
 import code.ponfee.commons.serial.Serializer;
+import code.ponfee.commons.util.Bytes;
 import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.hbase.annotation.HbaseField;
 import code.ponfee.hbase.annotation.HbaseTable;
@@ -116,7 +116,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     private final ImmutableMap<String, Column> columnMap;
     private final String globalFamily; // table(class)-level family name
     private final byte[] globalFamilyBytes;
-    private final List<byte[]> definedFamilies;
+    private final List<byte[]> definedFamiliesBytes;
     private final Serializer rowkeySerializer;
     protected final String tableName;
 
@@ -183,7 +183,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
             columnsBuilder.put(qualifier, new Column(f, family, qualifier, serializer, format));
         }
         this.columnMap = columnsBuilder.build();
-        this.definedFamilies = listBuilder.build();
+        this.definedFamiliesBytes = listBuilder.build();
 
         // 6、Defined the java bean & hbase row mapping
         this.rowMapper = (result, rowNum) -> {
@@ -196,9 +196,10 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                 result.listCells().forEach(cell -> {
                     // CellUtil.cloneFamily(cell), cell.getTimestamp(), cell.getSequenceId()
                     String qualifier = Bytes.toString(cloneQualifier(cell));
-                    Object value = deserialValue(bean, qualifier, cloneValue(cell));
+                    Column column = this.columnMap.get(qualifier);
+                    Object value = deserialValue(bean, column, cloneValue(cell));
                     if (value != null) {
-                        Fields.put(bean, this.columnMap.get(qualifier).getField(), value);
+                        Fields.put(bean, column.getField(), value);
                     }
                 });
             } else if (bean instanceof HbaseMap) {
@@ -300,7 +301,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
     public boolean createTable() {
         // this.tableName include namespace
-        return createTable(null, this.tableName, definedFamilies);
+        return createTable(null, this.tableName, this.definedFamiliesBytes);
     }
 
     public boolean createTable(String tableName, String[] colFamilies) {
@@ -744,7 +745,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     }
 
     public boolean deleteFamily(List<String> rowKeys) {
-        return delete(tableName, rowKeys, definedFamilies);
+        return delete(tableName, rowKeys, this.definedFamiliesBytes);
     }
 
     public boolean delete(String tableName, List<String> rowKeys) {
@@ -891,7 +892,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     }
 
     private void addDefinedFamilies(Scan scan) {
-        definedFamilies.forEach(scan::addFamily);
+        this.definedFamiliesBytes.forEach(scan::addFamily);
     }
 
     private byte[] serialRowKey(@Nonnull R rowKey) {
@@ -929,9 +930,8 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     }
 
     // Only for HbaseEntity
-    private Object deserialValue(Object target, String qualifier, byte[] bytes) {
-        Column column;
-        if (bytes == null || (column = this.columnMap.get(qualifier)) == null) {
+    private Object deserialValue(Object target, Column column, byte[] bytes) {
+        if (bytes == null || column == null) {
             return null; // null value or not exists qualifier field name
         }
 

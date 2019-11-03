@@ -52,6 +52,9 @@ public class BeanMapDaoTest extends SpringBaseTest<BeanMapDao> {
 
             BeanMap beanMap= new BeanMap();
             beanMap.putAll(BeanMaps.CGLIB.toMap(entity));
+            beanMap.put("empty_string", "");
+            beanMap.put("blank_string", "   ");
+            beanMap.put("null_string", null);
             batch.add(beanMap);
         }
         
@@ -71,9 +74,9 @@ public class BeanMapDaoTest extends SpringBaseTest<BeanMapDao> {
     @Test
     //@Ignore
     public void delete() {
-        consoleJson(getBean().get("fu_ponfee_19840415"));
-        consoleJson(getBean().delete(Lists.newArrayList("fu_ponfee_19840415", "fu_ponfee_20110531")));
-        consoleJson(getBean().get("fu_ponfee_19840415"));
+        consoleJson(getBean().get("fu_ponfee_19760624"));
+        consoleJson(getBean().delete(Lists.newArrayList("fu_ponfee_19760624")));
+        consoleJson(getBean().get("fu_ponfee_19760624"));
     }
 
 }
