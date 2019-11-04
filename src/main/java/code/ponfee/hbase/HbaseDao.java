@@ -150,7 +150,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         // 4、Global family and all configed column families
         this.globalFamily = (ht == null || isBlank(ht.family())) ? null : ht.family().trim();
         this.globalFamilyBytes = isEmpty(this.globalFamily) ? null : this.globalFamily.getBytes();
-        Set<String> configedFamilies = Sets.newHashSet(); // all configed global column family(prevent duplicate)
+        Set<String> configedFamilies = Sets.newHashSet(); // prevent duplicate: configed global and Fields column family
         ImmutableList.Builder<byte[]> listBuilder = new ImmutableList.Builder<>();
         if (this.globalFamilyBytes != null) {
             configedFamilies.add(this.globalFamily);
@@ -197,7 +197,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                     // CellUtil.cloneFamily(cell), cell.getTimestamp(), cell.getSequenceId()
                     String qualifier = Bytes.toString(cloneQualifier(cell));
                     Column column = this.columnMap.get(qualifier);
-                    Object value = deserialValue(bean, column, cloneValue(cell));
+                    Object value = deserialValue(column, cloneValue(cell));
                     if (value != null) {
                         Fields.put(bean, column.getField(), value);
                     }
@@ -920,26 +920,26 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         Object value = Fields.get(target, column.getField());
         if (value == null) {
             return null;
-        } else if (column.getSerializer() != null) {
-            return column.getSerializer().serialize(value);
         } else if (column.getDateBytesConvert() != null) {
             return column.getDateBytesConvert().toBytes((Date) value);
+        } else if (column.getSerializer() != null) {
+            return column.getSerializer().serialize(value);
         } else {
             return toBytes(value); // others conditions
         }
     }
 
     // Only for HbaseEntity
-    private Object deserialValue(Object target, Column column, byte[] bytes) {
+    private Object deserialValue(Column column, byte[] bytes) {
         if (bytes == null || column == null) {
             return null; // null value or not exists qualifier field name
         }
 
         Class<?> fieldType = column.getField().getType();
-        if (column.getSerializer() != null) {
-            return column.getSerializer().deserialize(bytes, fieldType);
-        } else if (column.getDateBytesConvert() != null) {
+        if (column.getDateBytesConvert() != null) {
             return column.getDateBytesConvert().toDate(bytes);
+        } else if (column.getSerializer() != null) {
+            return column.getSerializer().deserialize(bytes, fieldType);
         } else {
             return fromBytes(bytes, fieldType);
         }

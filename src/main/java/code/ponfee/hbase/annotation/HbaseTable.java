@@ -7,8 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import code.ponfee.commons.serial.NullSerializer;
 import code.ponfee.commons.serial.Serializer;
-import code.ponfee.commons.serial.ToStringSerializer;
 
 /**
  * Mapped by hbase table name
@@ -31,6 +31,6 @@ public @interface HbaseTable {
     String family() default "";
 
     /** row key serializer */
-    Class<? extends Serializer> serializer() default ToStringSerializer.class;
+    Class<? extends Serializer> serializer() default NullSerializer.class;
 
 }
