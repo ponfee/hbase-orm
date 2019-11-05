@@ -21,8 +21,8 @@ import com.google.common.collect.ImmutableList;
 
 import code.ponfee.commons.serial.Serializer;
 import code.ponfee.hbase.annotation.HbaseField;
+import code.ponfee.hbase.convert.DateBytesConvertor;
 import code.ponfee.hbase.convert.DefaultDateBytesConvertor;
-import code.ponfee.hbase.covert.DateBytesConvertor;
 
 /**
  * Config java bean & hbase column mapping configuration
