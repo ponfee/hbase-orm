@@ -16,6 +16,7 @@ import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.model.Result;
 import code.ponfee.commons.serial.WrappedSerializer;
 import code.ponfee.commons.serial.KryoSerializer;
+import code.ponfee.commons.serial.ToStringSerializer;
 import code.ponfee.commons.util.Dates;
 import code.ponfee.commons.util.SecureRandoms;
 import code.ponfee.hbase.Constants;
@@ -98,6 +99,59 @@ public class BeanEntity extends HbaseEntity<String> {
     @HbaseField(format = "yyyyMMdd")
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     private Date birthday;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private long xlong1 = ThreadLocalRandom.current().nextLong();
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private Long xlong2;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private int xint1 = ThreadLocalRandom.current().nextInt();
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private float xfloat1 = ThreadLocalRandom.current().nextFloat();
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private double xdouble1 = ThreadLocalRandom.current().nextDouble();
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private Double xdouble2;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private boolean xbool1 = true;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private boolean xbool2 = false;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private Boolean xbool3;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private byte xbyte1 = 12;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private Byte xbyte2;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private short xshort1 = 23;
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private char xchar1 = '4';
+    
+    @HbaseField(serializer = ToStringSerializer.class)
+    private Character xchar2 = '4';
+    
+    
+    
 
     public String getFirstName() {
         return firstName;
@@ -359,6 +413,118 @@ public class BeanEntity extends HbaseEntity<String> {
 
     public void setRes(Result<String> res) {
         this.res = res;
+    }
+
+    public long getXlong1() {
+        return xlong1;
+    }
+
+    public void setXlong1(long xlong1) {
+        this.xlong1 = xlong1;
+    }
+
+    public Long getXlong2() {
+        return xlong2;
+    }
+
+    public void setXlong2(Long xlong2) {
+        this.xlong2 = xlong2;
+    }
+
+    public int getXint1() {
+        return xint1;
+    }
+
+    public void setXint1(int xint1) {
+        this.xint1 = xint1;
+    }
+
+    public float getXfloat1() {
+        return xfloat1;
+    }
+
+    public void setXfloat1(float xfloat1) {
+        this.xfloat1 = xfloat1;
+    }
+
+    public double getXdouble1() {
+        return xdouble1;
+    }
+
+    public void setXdouble1(double xdouble1) {
+        this.xdouble1 = xdouble1;
+    }
+
+    public Double getXdouble2() {
+        return xdouble2;
+    }
+
+    public void setXdouble2(Double xdouble2) {
+        this.xdouble2 = xdouble2;
+    }
+
+    public boolean isXbool1() {
+        return xbool1;
+    }
+
+    public void setXbool1(boolean xbool1) {
+        this.xbool1 = xbool1;
+    }
+
+    public boolean isXbool2() {
+        return xbool2;
+    }
+
+    public void setXbool2(boolean xbool2) {
+        this.xbool2 = xbool2;
+    }
+
+    public Boolean getXbool3() {
+        return xbool3;
+    }
+
+    public void setXbool3(Boolean xbool3) {
+        this.xbool3 = xbool3;
+    }
+
+    public byte getXbyte1() {
+        return xbyte1;
+    }
+
+    public void setXbyte1(byte xbyte1) {
+        this.xbyte1 = xbyte1;
+    }
+
+    public Byte getXbyte2() {
+        return xbyte2;
+    }
+
+    public void setXbyte2(Byte xbyte2) {
+        this.xbyte2 = xbyte2;
+    }
+
+    public short getXshort1() {
+        return xshort1;
+    }
+
+    public void setXshort1(short xshort1) {
+        this.xshort1 = xshort1;
+    }
+
+    public char getXchar1() {
+        return xchar1;
+    }
+
+    public void setXchar1(char xchar1) {
+        this.xchar1 = xchar1;
+    }
+
+    public Character getXchar2() {
+        return xchar2;
+    }
+
+    public void setXchar2(Character xchar2) {
+        this.xchar2 = xchar2;
     }
 
 }

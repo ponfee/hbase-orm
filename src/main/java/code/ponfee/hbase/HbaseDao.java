@@ -151,10 +151,10 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         this.globalFamily = (ht == null || isBlank(ht.family())) ? null : ht.family().trim();
         this.globalFamilyBytes = isEmpty(this.globalFamily) ? null : this.globalFamily.getBytes();
         Set<String> configedFamilies = Sets.newHashSet(); // prevent duplicate: configed global and Fields column family
-        ImmutableList.Builder<byte[]> listBuilder = new ImmutableList.Builder<>();
+        ImmutableList.Builder<byte[]> familiesBuilder = new ImmutableList.Builder<>();
         if (this.globalFamilyBytes != null) {
             configedFamilies.add(this.globalFamily);
-            listBuilder.add(this.globalFamilyBytes);
+            familiesBuilder.add(this.globalFamilyBytes);
         }
 
         // 5、Gets the field(hbase column) configuration
@@ -172,7 +172,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
             }
             family = family.trim();
             if (configedFamilies.add(family)) {
-                listBuilder.add(toBytes(family));
+                familiesBuilder.add(toBytes(family));
             }
 
             String qualifier = Optional.ofNullable(hf).map(HbaseField::qualifier)
@@ -183,7 +183,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
             columnsBuilder.put(qualifier, new Column(f, family, qualifier, serializer, format));
         }
         this.columnMap = columnsBuilder.build();
-        this.definedFamiliesBytes = listBuilder.build();
+        this.definedFamiliesBytes = familiesBuilder.build();
 
         // 6、Defined the java bean & hbase row mapping
         this.rowMapper = (result, rowNum) -> {
@@ -855,7 +855,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         List<T> result = template.find(tableName, scan, rowMapper);
 
         // sort result
-        Comparator<R> c = reversed ? Comparator.reverseOrder() : Comparator.naturalOrder();
+        Comparator<? super R> c = reversed ? Comparator.reverseOrder() : Comparator.naturalOrder();
         result.sort(Comparator.comparing(HbaseBean::getRowKey, Comparator.nullsLast(c)));
         //result.sort(Comparator.comparing(Function.identity(), Comparator.nullsLast(c)));
 
