@@ -9,21 +9,20 @@
 package code.ponfee.hbase.model;
 
 import java.lang.reflect.Field;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import com.google.common.collect.ImmutableList;
 
 import code.ponfee.commons.serial.Serializer;
-import code.ponfee.commons.util.Bytes;
 import code.ponfee.hbase.annotation.HbaseField;
+import code.ponfee.hbase.convert.DefaultDateBytesConvertor;
+import code.ponfee.hbase.covert.DateBytesConvertor;
 
 /**
  * Config java bean & hbase column mapping configuration
@@ -51,7 +50,7 @@ public class Column implements java.io.Serializable {
         this.qualifier = qualifier;
         this.serializer = serializer;
         this.format = ImmutableList.copyOf(
-            Arrays.stream(format == null ? ArrayUtils.EMPTY_STRING_ARRAY : format)
+            Arrays.stream(ObjectUtils.defaultIfNull(format, ArrayUtils.EMPTY_STRING_ARRAY))
                   .filter(StringUtils::isNotBlank).map(String::trim).distinct()
                   .toArray(String[]::new)
         );
@@ -66,7 +65,7 @@ public class Column implements java.io.Serializable {
             pattern = pattern.trim();
             this.dateBytesConvert = HbaseField.FORMAT_TIMESTAMP.equals(pattern) 
                                   ? DateBytesConvertor.TIMESTAMP 
-                                  : new DefaultDateBytesConvertor(this.format.toArray(new String[0]));
+                                  : new DefaultDateBytesConvertor(this.format.toArray(new String[this.format.size()]));
         } else {
             this.dateBytesConvert = null;
         }
@@ -102,57 +101,6 @@ public class Column implements java.io.Serializable {
 
     public DateBytesConvertor getDateBytesConvert() {
         return dateBytesConvert;
-    }
-
-    public static abstract class DateBytesConvertor {
-        public static DateBytesConvertor TIMESTAMP = new DateBytesConvertor() {
-            @Override
-            protected byte[] toBytes0(Date date) {
-                return Bytes.toBytes(date.getTime());
-            }
-
-            @Override
-            protected Date toDate0(byte[] bytes) {
-                return new Date(Bytes.toLong(bytes));
-            }
-        };
-
-        protected abstract byte[] toBytes0(Date date);
-
-        protected abstract Date toDate0(byte[] bytes);
-
-        public final byte[] toBytes(Date date) {
-            return date == null ? null : toBytes0(date);
-        }
-
-        public final Date toDate(byte[] bytes) {
-            return ArrayUtils.isEmpty(bytes) ? null : toDate0(bytes);
-        }
-    }
-
-    public static class DefaultDateBytesConvertor extends DateBytesConvertor {
-        private final FastDateFormat dateFormat;
-        private final String[] patterns;
-
-        public DefaultDateBytesConvertor(String[] patterns) {
-            this.dateFormat = FastDateFormat.getInstance(patterns[0].trim());
-            this.patterns = patterns;
-        }
-
-        @Override
-        protected byte[] toBytes0(Date date) {
-            return Bytes.toBytes(this.dateFormat.format(date));
-        }
-
-        @Override
-        protected Date toDate0(byte[] bytes) {
-            String date = Bytes.toString(bytes);
-            try {
-                return DateUtils.parseDate(date, this.patterns); // date format
-            } catch (ParseException e) {
-                throw new RuntimeException("Invalid date format: " + date);
-            }
-        }
     }
 
 }
