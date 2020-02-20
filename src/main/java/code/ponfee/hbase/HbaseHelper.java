@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
+import code.ponfee.commons.math.Maths;
 import code.ponfee.commons.serial.WrappedSerializer;
 import code.ponfee.commons.util.Bytes;
 
@@ -30,8 +31,8 @@ public class HbaseHelper {
             return StringUtils.repeat('0', len);
         }
 
-        int salt = Math.abs(source.hashCode());
-        return StringUtils.leftPad(Integer.toString(salt % partition), len, '0');
+        int hash = Maths.abs(source.hashCode());
+        return StringUtils.leftPad(Integer.toString(hash % partition), len, '0');
     }
 
     // -----------------------------------------------------------next row key

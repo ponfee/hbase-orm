@@ -29,9 +29,7 @@ import code.ponfee.hbase.convert.DefaultDateBytesConvertor;
  * 
  * @author Ponfee
  */
-public class Column implements java.io.Serializable {
-
-    private static final long serialVersionUID = 3502285331674687682L;
+public class Column {
 
     private final Field field;
     private final String family;
