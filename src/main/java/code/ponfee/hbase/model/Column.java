@@ -60,7 +60,6 @@ public class Column {
         if (   StringUtils.isNotBlank(pattern) 
             && Date.class.isAssignableFrom(field.getType())
         ) {
-            pattern = pattern.trim();
             this.dateBytesConvert = HbaseField.FORMAT_TIMESTAMP.equals(pattern) 
                                   ? DateBytesConvertor.TIMESTAMP 
                                   : new DefaultDateBytesConvertor(this.format.toArray(new String[this.format.size()]));

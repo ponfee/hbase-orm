@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-import code.ponfee.hbase.HbaseHelper;
+import code.ponfee.hbase.HbaseUtils;
 
 /**
  * The base bean class for mapped by hbase table
@@ -78,7 +78,7 @@ public interface HbaseBean<R extends Comparable<? super R> & Serializable>
      */
     @Transient
     default byte[] getRowKeyAsBytes() {
-        return HbaseHelper.toBytes(getRowKey());
+        return HbaseUtils.toBytes(getRowKey());
     }
 
     // -------------------------------------------Comparable & Object

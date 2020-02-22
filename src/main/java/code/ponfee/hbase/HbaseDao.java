@@ -1,7 +1,7 @@
 package code.ponfee.hbase;
 
-import static code.ponfee.hbase.HbaseHelper.fromBytes;
-import static code.ponfee.hbase.HbaseHelper.toBytes;
+import static code.ponfee.hbase.HbaseUtils.fromBytes;
+import static code.ponfee.hbase.HbaseUtils.toBytes;
 import static code.ponfee.hbase.model.HbaseMap.ROW_KEY_NAME;
 import static code.ponfee.hbase.model.HbaseMap.ROW_NUM_NAME;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
@@ -309,7 +309,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     }
 
     public boolean createTable(String namespace, String tableName, String[] colFamilies) {
-        List<byte[]> families = Stream.of(colFamilies).map(HbaseHelper::toBytes)
+        List<byte[]> families = Stream.of(colFamilies).map(HbaseUtils::toBytes)
                                       .collect(Collectors.toList());
         return createTable(namespace, tableName, families);
     }
@@ -600,7 +600,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
      * @return a previous rowkey relatively start rowkey
      */
     public String maxRowKey(String rowKeyPrefix, String startRowKey, int paddingLength) {
-        byte[] startRowKeyBytes = HbaseHelper.paddingStopRowKey(startRowKey, paddingLength);
+        byte[] startRowKeyBytes = HbaseUtils.paddingStopRowKey(startRowKey, paddingLength);
         Object rowKey = nearRowKey(rowKeyPrefix, startRowKeyBytes, false);
         return (rowKey instanceof String) ? (String) rowKey : startRowKey;
     }

@@ -1,6 +1,6 @@
 package code.ponfee.hbase;
 
-import static code.ponfee.hbase.HbaseHelper.nextStartRowKey;
+import static code.ponfee.hbase.HbaseUtils.nextStartRowKey;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -163,7 +163,8 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
 
     // ------------------------------------------------------------------------private methods
     /**
-     * Scroll process, include start row key
+     * Scroll process with only rowkey, include start row key,
+     * Only use in count data or delete data by rowkey
      * 
      * @param query the PageQueryBuilder
      * @param name the ops name

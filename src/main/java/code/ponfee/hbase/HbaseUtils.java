@@ -11,11 +11,11 @@ import code.ponfee.commons.serial.WrappedSerializer;
 import code.ponfee.commons.util.Bytes;
 
 /**
- * Hbase helper
+ * Hbase utility class
  * 
  * @author Ponfee
  */
-public class HbaseHelper {
+public final class HbaseUtils {
 
     private static final int DEFAULT_PARTITION_COUNT = 100;
     private static final WrappedSerializer SERIALIZER = WrappedSerializer.WRAPPED_TOSTRING_SERIALIZER;

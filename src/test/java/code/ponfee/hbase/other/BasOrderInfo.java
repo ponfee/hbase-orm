@@ -1,6 +1,6 @@
 package code.ponfee.hbase.other;
 
-import static code.ponfee.hbase.HbaseHelper.partition;
+import static code.ponfee.hbase.HbaseUtils.partition;
 
 import java.util.Date;
 
