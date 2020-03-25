@@ -1,5 +1,7 @@
 package code.ponfee.hbase;
 
+import static code.ponfee.commons.serial.WrappedSerializer.WRAPPED_TOSTRING_SERIALIZER;
+
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -7,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 import code.ponfee.commons.math.Maths;
-import code.ponfee.commons.serial.WrappedSerializer;
+import code.ponfee.commons.math.Numbers;
 import code.ponfee.commons.util.Bytes;
 
 /**
@@ -17,11 +19,10 @@ import code.ponfee.commons.util.Bytes;
  */
 public final class HbaseUtils {
 
-    private static final int DEFAULT_PARTITION_COUNT = 100;
-    private static final WrappedSerializer SERIALIZER = WrappedSerializer.WRAPPED_TOSTRING_SERIALIZER;
+    public static final int DEFAULT_PARTITIONS = 100;
 
     public static String partition(Object source) {
-        return partition(source, DEFAULT_PARTITION_COUNT);
+        return partition(source, DEFAULT_PARTITIONS);
     }
 
     public static String partition(Object source, int partition) {
@@ -57,21 +58,22 @@ public final class HbaseUtils {
     }
 
     public static byte[] toBytes(Object value) {
-        return SERIALIZER.serialize(value);
+        return WRAPPED_TOSTRING_SERIALIZER.serialize(value);
     }
 
     public static <T> T fromBytes(byte[] bytes, Class<T> clazz) {
-        return SERIALIZER.deserialize(bytes, clazz);
+        return WRAPPED_TOSTRING_SERIALIZER.deserialize(bytes, clazz);
     }
 
     // ---------------------------------------------------------------private methods
     private static byte[] paddingRowKey(String rowKeyPrefix, 
                                         int paddingLength, byte padding) {
-        byte[] rowKeyBytes = Bytes.toBytes(rowKeyPrefix);
-        int fromIndex = rowKeyBytes.length;
-        int toIndex = fromIndex + paddingLength;
-        rowKeyBytes = Arrays.copyOf(rowKeyBytes, toIndex);
-        Arrays.fill(rowKeyBytes, fromIndex, toIndex, padding);
+        byte[] prefixBytes = Bytes.toBytes(rowKeyPrefix);
+        int length = prefixBytes.length + paddingLength;
+        byte[] rowKeyBytes = Arrays.copyOf(prefixBytes, length);
+        if (padding != Numbers.BYTE_ZERO) {
+            Arrays.fill(rowKeyBytes, prefixBytes.length, length, padding);
+        }
         return rowKeyBytes;
     }
 
