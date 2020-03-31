@@ -168,7 +168,7 @@ public class PageQueryBuilder {
                                   byte[] min, boolean inclusiveMin,
                                   byte[] max, boolean inclusiveMax) {
         this.filters.addFilter(greater0(family, qualifier, min, inclusiveMin)); // >(=) min
-        this.filters.addFilter(less0(family, qualifier, max, inclusiveMax)); // <(=) max
+        this.filters.addFilter(less0(family, qualifier, max, inclusiveMax));    // <(=) max
         return this;
     }
 
@@ -176,7 +176,7 @@ public class PageQueryBuilder {
                                      byte[] min, boolean inclusiveMin,
                                      byte[] max, boolean inclusiveMax) {
         FilterList filters = new FilterList(FilterList.Operator.MUST_PASS_ONE);
-        filters.addFilter(less0(family, qualifier, min, !inclusiveMin)); // <(=) min
+        filters.addFilter(less0(family, qualifier, min, !inclusiveMin));    // <(=) min
         filters.addFilter(greater0(family, qualifier, max, !inclusiveMax)); // >(=) max
         this.filters.addFilter(filters);
         return this;
@@ -232,9 +232,12 @@ public class PageQueryBuilder {
 
     // ------------------------------------------------------------row key filter
     public PageQueryBuilder rowKeyOnly() {
-        // origin: {"name":"pUqnw","rowKey":"20181004162958","age":"3"}
+        // origin data: {"name":"pUqnw","rowKey":"20181004162958","age":"3"}
+
         this.filters.addFilter(new FirstKeyOnlyFilter()); // {"rowKey":"20181004162958","age":"3"}
+
         //this.filters.addFilter(new KeyOnlyFilter()); // {"name":"","rowKey":"20181004162958","age":""}
+
         return this;
     }
 
@@ -344,6 +347,7 @@ public class PageQueryBuilder {
         return results.get(isNextPage ? results.size() - 1 : 0);
     }
 
+    // ------------------------------------------------------------private static methods
     private static SingleColumnValueFilter equals(String family, String qualifier,
                                                   byte[] value, boolean predicate) {
         return new SingleColumnValueFilter(
