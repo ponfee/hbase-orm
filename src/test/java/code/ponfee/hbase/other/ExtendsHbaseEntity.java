@@ -8,10 +8,10 @@ import code.ponfee.commons.util.Dates;
 import code.ponfee.hbase.Constants;
 import code.ponfee.hbase.annotation.HbaseField;
 import code.ponfee.hbase.annotation.HbaseTable;
-import code.ponfee.hbase.model.HbaseEntity;
+import code.ponfee.hbase.model.HbaseBean;
 
 @HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "t_test_entity", family = "cf1")
-public class ExtendsHbaseEntity extends HbaseEntity<String> {
+public class ExtendsHbaseEntity extends HbaseBean<String> {
 
     private static final long serialVersionUID = -1701075762499122949L;
     private String firstName;

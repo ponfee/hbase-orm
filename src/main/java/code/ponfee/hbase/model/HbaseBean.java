@@ -1,124 +1,64 @@
 package code.ponfee.hbase.model;
 
-import java.beans.Transient;
 import java.io.Serializable;
-import java.util.Objects;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-
-import code.ponfee.hbase.HbaseUtils;
+import code.ponfee.hbase.annotation.HbaseField;
 
 /**
- * The base bean class for mapped by hbase table
+ * The Java bean class for mapped hbase table
  * 
  * @author Ponfee
  * @param <R> the row key type
  */
-public interface HbaseBean<R extends Comparable<? super R> & Serializable>
-    extends Comparable<HbaseBean<R>>, Serializable {
+public abstract class HbaseBean<R extends Serializable & Comparable<? super R>>
+    implements HbaseEntity<R> {
 
-    /**
-     * Returns the hbase row key
-     * 
-     * @return a hbase row key
-     */
-    R getRowKey();
+    private static final long serialVersionUID = 2467942701509706341L;
 
-    /**
-     * Returns the row number for current page result
-     * 
-     * @return a int row number of page
-     */
-    int getRowNum();
+    @HbaseField(ignore = true)
+    protected R rowKey;
 
-    /**
-     * Sets row key to hbase bean
-     * 
-     * @param rowKey the hbase row key
-     */
-    void setRowKey(R rowKey);
+    @HbaseField(ignore = true)
+    protected int rowNum;
 
-    /**
-     * Sets row number for page data list
-     * 
-     * @param rowNum the current page data list row number
-     */
-    void setRowNum(int rowNum);
+    /*@HbaseField(ignore = true)
+    protected int sequenceId;
+    @HbaseField(ignore = true)
+    protected int timestamp;*/
 
-    //int getTimestamp();
-    //int getSequenceId();
-
-    // ----------------------------------------------default methods
-    /**
-     * Returns the data object hbase rowkey, 
-     * sub class can override this methods
-     * 
-     * @return a rowkey
-     */
-    default R buildRowKey() {
-        return this.getRowKey();
-    }
-
-    /**
-     * Returns a string of row key,
-     * Sub class can override this method
-     * 
-     * @return row key as string
-     */
-    @Transient
-    default String getRowKeyAsString() {
-        return Objects.toString(getRowKey(), null);
-    }
-
-    /**
-     * Returns a byte array of row key,
-     * Sub class can override this method
-     * 
-     * @return row key as byte array
-     */
-    @Transient
-    default byte[] getRowKeyAsBytes() {
-        return HbaseUtils.toBytes(getRowKey());
-    }
-
-    // -------------------------------------------Comparable & Object
     @Override
-    default int compareTo(HbaseBean<R> other) {
-        return new CompareToBuilder()
-            .append(this.getRowKey(), other.getRowKey())
-            .toComparison();
+    public final R getRowKey() {
+        return rowKey;
     }
 
-    default int hashCode0() {
-        R rowKey;
-        return (rowKey = this.getRowKey()) == null 
-               ? 0 : rowKey.hashCode();
-
-        /*return new HashCodeBuilder()
-            .append(this.getRowKey())
-            .toHashCode();*/
+    @Override
+    public final int getRowNum() {
+        return rowNum;
     }
 
-    @SuppressWarnings("unchecked")
-    default boolean equals0(Object obj) {
-        if (!this.getClass().isInstance(obj)) {
-            return false;
-        }
-
-        R tkey, okey;
-        return (tkey = this.getRowKey()) == null
-            || (okey = ((HbaseBean<R>) obj).getRowKey()) == null
-            ? false : tkey.equals(okey);
-
-        /*return new EqualsBuilder()
-                .append(this.getRowKey(), ((HbaseMap<?, R>) obj)
-                .getRowKey()).isEquals();*/
+    @Override
+    public final void setRowKey(R rowKey) {
+        this.rowKey = rowKey;
     }
 
-    default String toString0() {
-        return new StringBuilder(this.getClass().getName())
-            .append("@").append(this.getRowKey()).toString();
-        //return new ToStringBuilder(this).toString();
+    @Override
+    public final void setRowNum(int rowNum) {
+        this.rowNum = rowNum;
+    }
+
+    @Override
+    public int hashCode() {
+        return HbaseEntity.super.hashCode0();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HbaseEntity.super.equals0(obj);
+    }
+
+    @Override
+    public String toString() {
+        return HbaseEntity.super.toString0();
     }
 
 }

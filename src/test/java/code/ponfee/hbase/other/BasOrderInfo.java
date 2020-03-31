@@ -10,10 +10,10 @@ import code.ponfee.commons.util.Dates;
 import code.ponfee.hbase.Constants;
 import code.ponfee.hbase.annotation.HbaseField;
 import code.ponfee.hbase.annotation.HbaseTable;
-import code.ponfee.hbase.model.HbaseEntity;
+import code.ponfee.hbase.model.HbaseBean;
 
 @HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "t_bas_order_info", family="cf1")
-public class BasOrderInfo extends HbaseEntity<String> {
+public class BasOrderInfo extends HbaseBean<String> {
 
     private static final String DATE_PATTERN1 = "yyyy-MM-dd HH:mm:ss.SSS";
     private static final String DATE_PATTERN2 = "yyyy-MM-dd HH:mm:ss";

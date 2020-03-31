@@ -22,7 +22,7 @@ import code.ponfee.commons.util.SecureRandoms;
 import code.ponfee.hbase.Constants;
 import code.ponfee.hbase.annotation.HbaseField;
 import code.ponfee.hbase.annotation.HbaseTable;
-import code.ponfee.hbase.model.HbaseEntity;
+import code.ponfee.hbase.model.HbaseBean;
 import io.netty.util.internal.ThreadLocalRandom;
 
 /**
@@ -31,7 +31,7 @@ import io.netty.util.internal.ThreadLocalRandom;
  * @author Ponfee
  */
 @HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "t_bean_entity", family = "cf1")
-public class BeanEntity extends HbaseEntity<String> {
+public class BeanEntity extends HbaseBean<String> {
 
     private static final long serialVersionUID = 4412422627257733721L;
 

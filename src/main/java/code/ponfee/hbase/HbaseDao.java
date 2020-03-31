@@ -88,8 +88,8 @@ import code.ponfee.commons.util.ObjectUtils;
 import code.ponfee.hbase.annotation.HbaseField;
 import code.ponfee.hbase.annotation.HbaseTable;
 import code.ponfee.hbase.model.Column;
-import code.ponfee.hbase.model.HbaseBean;
 import code.ponfee.hbase.model.HbaseEntity;
+import code.ponfee.hbase.model.HbaseBean;
 import code.ponfee.hbase.model.HbaseMap;
 import code.ponfee.hbase.model.PageQueryBuilder;
 
@@ -97,10 +97,10 @@ import code.ponfee.hbase.model.PageQueryBuilder;
  * The Hbase dao common base class
  * 
  * @author Ponfee
- * @param <T> the HbaseBean(HbaseEntity or HbaseMap)
- * @param <R> the hbase rowkey of HbaseBean(HbaseEntity or HbaseMap)
+ * @param <T> the HbaseEntity(HbaseBean or HbaseMap)
+ * @param <R> the hbase rowkey of HbaseEntity(HbaseBean or HbaseMap)
  */
-public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & Comparable<? super R>> {
+public abstract class HbaseDao<T extends HbaseEntity<R>, R extends Serializable & Comparable<? super R>> {
 
     private static Logger logger = LoggerFactory.getLogger(HbaseDao.class);
 
@@ -110,7 +110,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
     //private static final TimestampProvider PROVIDER = TimestampProvider.CURRENT;
     private static final TimestampProvider PROVIDER = TimestampProvider.LATEST;
 
-    private final Class<T> beanType;
+    private final Class<T> entityType;
     private final RowMapper<T> rowMapper;
     private final Class<R> rowKeyType;
     private final ImmutableMap<String, Column> columnMap;
@@ -124,14 +124,12 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
     @SuppressWarnings("unchecked")
     public HbaseDao() {
-        // 1、Get the bean type of ORM's O(object)
+        // 1、Get the entity type of ORM's O(object)
         Class<?> clazz = this.getClass();
-        this.beanType = GenericUtils.getActualTypeArgument(clazz, 0);
-        if (   !HbaseEntity.class.isAssignableFrom(this.beanType)
-            && !HbaseMap.class.isAssignableFrom(this.beanType)
-        ) {
+        this.entityType = GenericUtils.getActualTypeArgument(clazz, 0);
+        if (!HbaseEntity.class.isAssignableFrom(this.entityType)) {
             throw new UnsupportedOperationException(
-                "The class generic type must be HbaseEntity or HbaseMap"
+                "The class generic type must be HbaseEntity type."
             );
         }
 
@@ -140,7 +138,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         // 3、Table name, if not defined in annotation then 
         // defaults the class name lower underscore name
-        HbaseTable ht = this.beanType.getDeclaredAnnotation(HbaseTable.class);
+        HbaseTable ht = this.entityType.getDeclaredAnnotation(HbaseTable.class);
         String tableName = (ht == null || isBlank(ht.tableName())) 
                            ? toLowerCamel(clazz.getSimpleName())
                            : ht.tableName().trim();
@@ -159,7 +157,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         // 5、Gets the field(hbase column) configuration
         ImmutableMap.Builder<String, Column> columnsBuilder = new ImmutableMap.Builder<>();
-        for (Field f : ClassUtils.listFields(this.beanType)) {
+        for (Field f : ClassUtils.listFields(this.entityType)) {
             HbaseField hf = f.getAnnotation(HbaseField.class);
             if (hf != null && hf.ignore()) {
                 continue;
@@ -168,7 +166,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
                                     .filter(StringUtils::isNotBlank)
                                     .orElse(this.globalFamily);
             if (isBlank(family)) {
-                throw new RuntimeException("Unconfiged column family, bean filed: " + f.getName());
+                throw new RuntimeException("Unconfiged column family '" + f.getName() + "'");
             }
             family = family.trim();
             if (configedFamilies.add(family)) {
@@ -185,46 +183,46 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         this.columnMap = columnsBuilder.build();
         this.definedFamiliesBytes = familiesBuilder.build();
 
-        // 6、Defined the java bean & hbase row mapping
+        // 6、Defined the java eneity & hbase row mapping
         this.rowMapper = (result, rowNum) -> {
             if (result.isEmpty()) {
                 return null;
             }
-            T bean = ObjectUtils.newInstance(this.beanType);
-            bean.setRowKey(deserialRowKey(result.getRow()));
-            if (bean instanceof HbaseEntity) {
+            T entity = ObjectUtils.newInstance(this.entityType);
+            entity.setRowKey(deserialRowKey(result.getRow()));
+            if (entity instanceof HbaseBean) {
                 result.listCells().forEach(cell -> {
                     // CellUtil.cloneFamily(cell), cell.getTimestamp(), cell.getSequenceId()
                     String qualifier = Bytes.toString(cloneQualifier(cell));
                     Column column = this.columnMap.get(qualifier);
                     Object value = deserialValue(column, cloneValue(cell));
                     if (value != null) {
-                        Fields.put(bean, column.getField(), value);
+                        Fields.put(entity, column.getField(), value);
                     }
                 });
-            } else if (bean instanceof HbaseMap) {
-                Map<String, Object> map = (Map<String, Object>) bean;
+            } else if (entity instanceof HbaseMap) {
+                Map<String, Object> map = (Map<String, Object>) entity;
                 // HbaseMap only support string value
                 result.listCells().forEach(cell -> map.put(
                     Bytes.toString(cloneQualifier(cell)), Bytes.toString(cloneValue(cell))
                 ));
             } else {
                 throw new UnsupportedOperationException(
-                    "Unsupported type: " + this.beanType.getCanonicalName()
+                    "Unsupported type: " + this.entityType.getCanonicalName()
                 );
             }
-            return bean;
+            return entity;
         };
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <F> T convert(F from, Consumer<T> action) {
         T to;
-        if (this.beanType.isInstance(from)) {
+        if (this.entityType.isInstance(from)) {
             to = (T) from;
         } else {
-            to = ObjectUtils.newInstance(this.beanType);
-            if (Map.class.isAssignableFrom(this.beanType)) {
+            to = ObjectUtils.newInstance(this.entityType);
+            if (Map.class.isAssignableFrom(this.entityType)) {
                 if (Map.class.isInstance(from)) {
                     ((Map) to).putAll((Map<?, ?>) from);
                 } else {
@@ -695,33 +693,33 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         return template.execute(tableName, table -> {
             List<Put> batch = new ArrayList<>(data.size());
             long ts = PROVIDER.get(); byte[] fam = toBytes(familyName), rowKey;
-            for (T obj : data) {
-                if (ArrayUtils.isEmpty(rowKey = serialRowKey(obj.getRowKey()))) {
+            for (T e : data) {
+                if (ArrayUtils.isEmpty(rowKey = serialRowKey(e.getRowKey()))) {
                     throw new UnsupportedOperationException(
                         "Cannot get rowKey data or rowKey data is empty."
                     );
                 }
 
                 Put put;
-                if (obj instanceof HbaseEntity) {
+                if (e instanceof HbaseBean) {
                     put = new Put(rowKey);
-                    HbaseEntity<R> entity = (HbaseEntity<R>) obj;
+                    HbaseBean<R> bean = (HbaseBean<R>) e;
                     this.columnMap.forEach((name, column) -> {
-                        byte[] value = serialValue(entity, column);
+                        byte[] value = serialValue(bean, column);
                         if (value != null) {
                             byte[] family = defaultIfEmpty(fam, column.getFamilyBytes());
                             put.addColumn(family, column.getQualifierBytes(), ts, value);
                         }
                     });
-                } else if (obj instanceof HbaseMap) {
+                } else if (e instanceof HbaseMap) {
                     byte[] faimly = defaultIfEmpty(fam, this.globalFamilyBytes);
                     if (faimly == null) {
                         throw new IllegalArgumentException("Family cannot be null.");
                     }
-                    put = buildPut(rowKey, faimly, ts, (Map<String, Object>) obj);
+                    put = buildPut(rowKey, faimly, ts, (Map<String, Object>) e);
                 } else {
                     throw new UnsupportedOperationException(
-                        "Unsupported type: " + beanType.getCanonicalName()
+                        "Unsupported type: " + entityType.getCanonicalName()
                     );
                 }
                 if (!put.isEmpty()) {
@@ -856,7 +854,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
 
         // sort result
         Comparator<? super R> c = reversed ? Comparator.reverseOrder() : Comparator.naturalOrder();
-        result.sort(Comparator.comparing(HbaseBean::getRowKey, Comparator.nullsLast(c)));
+        result.sort(Comparator.comparing(HbaseEntity::getRowKey, Comparator.nullsLast(c)));
         //result.sort(Comparator.comparing(Function.identity(), Comparator.nullsLast(c)));
 
         if (   CollectionUtils.isNotEmpty(result) 
@@ -915,7 +913,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         }
     }
 
-    // Only for HbaseEntity
+    // Only for HbaseBean
     private static byte[] serialValue(Object target, Column column) {
         Object value = Fields.get(target, column.getField());
         if (value == null) {
@@ -929,7 +927,7 @@ public abstract class HbaseDao<T extends HbaseBean<R>, R extends Serializable & 
         }
     }
 
-    // Only for HbaseEntity
+    // Only for HbaseBean
     private Object deserialValue(Column column, byte[] bytes) {
         if (bytes == null || column == null) {
             return null; // null value or not exists qualifier field name

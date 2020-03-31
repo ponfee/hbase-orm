@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * The Map class for mapped by hbase table
+ * The Java map class for mapped hbase table
  * 
  * @author Ponfee
  * @param <R> the row key type
  */
 public abstract class HbaseMap<R extends Comparable<? super R> & Serializable>
-    extends HashMap<String, Object> implements HbaseBean<R> {
+    extends HashMap<String, Object> implements HbaseEntity<R> {
 
     private static final long serialVersionUID = 2482090979352032846L;
 
@@ -53,17 +53,17 @@ public abstract class HbaseMap<R extends Comparable<? super R> & Serializable>
 
     @Override
     public int hashCode() {
-        return HbaseBean.super.hashCode0();
+        return HbaseEntity.super.hashCode0();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return HbaseBean.super.equals0(obj);
+        return HbaseEntity.super.equals0(obj);
     }
 
     @Override
     public String toString() {
-        return HbaseBean.super.toString0();
+        return HbaseEntity.super.toString0();
     }
 
 }

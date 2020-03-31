@@ -29,18 +29,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import code.ponfee.commons.collect.ByteArrayWrapper;
 import code.ponfee.commons.concurrent.MultithreadExecutor;
-import code.ponfee.hbase.model.HbaseBean;
+import code.ponfee.hbase.model.HbaseEntity;
 import code.ponfee.hbase.model.PageQueryBuilder;
 
 /**
  * The Hbase dao common base class
  * 
- * @param <T> the HbaseBean(HbaseEntity or HbaseMap)
- * @param <R> the hbase rowkey of HbaseBean(HbaseEntity or HbaseMap)
+ * @param <T> the HbaseEntity(HbaseBean or HbaseMap)
+ * @param <R> the hbase rowkey of HbaseEntity(HbaseBean or HbaseMap)
  * 
  * @author Ponfee
  */
-public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializable & Comparable<? super R>> 
+public abstract class HbaseBatchDao<T extends HbaseEntity<R>, R extends Serializable & Comparable<? super R>> 
     extends HbaseDao<T, R> {
 
     private static Logger logger = LoggerFactory.getLogger(HbaseBatchDao.class);
@@ -86,7 +86,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
     }
 
     // ------------------------------------------------------------------------batch copy
-    public <E extends HbaseBean<U>, U extends Serializable & Comparable<? super U>> boolean copy(
+    public <E extends HbaseEntity<U>, U extends Serializable & Comparable<? super U>> boolean copy(
         PageQueryBuilder query, HbaseDao<E, U> target, Consumer<E> callback) {
         return copy(query, target, callback, taskExecutor.getThreadPoolExecutor());
     }
@@ -100,7 +100,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
      * @param threadPoolExecutor the threadPoolExecutor
      * @return {@code true} copy normal
      */
-    public <E extends HbaseBean<U>, U extends Serializable & Comparable<? super U>> boolean copy(
+    public <E extends HbaseEntity<U>, U extends Serializable & Comparable<? super U>> boolean copy(
         PageQueryBuilder query, HbaseDao<E, U> target,
         Consumer<E> callback, ThreadPoolExecutor threadPoolExecutor) {
         AtomicInteger round = new AtomicInteger(0);
@@ -254,7 +254,7 @@ public abstract class HbaseBatchDao<T extends HbaseBean<R>, R extends Serializab
      * @param <E>
      * @param <U>
      */
-    private static class AsnycBatchPut<E extends HbaseBean<U>, U extends Serializable & Comparable<? super U>> 
+    private static class AsnycBatchPut<E extends HbaseEntity<U>, U extends Serializable & Comparable<? super U>> 
         implements Callable<Boolean> {
         final HbaseDao<E, U> dao;
         final List<E> data;

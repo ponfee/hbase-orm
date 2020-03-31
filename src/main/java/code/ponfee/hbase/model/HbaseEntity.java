@@ -1,64 +1,124 @@
 package code.ponfee.hbase.model;
 
+import java.beans.Transient;
 import java.io.Serializable;
+import java.util.Objects;
 
-import code.ponfee.hbase.annotation.HbaseField;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+
+import code.ponfee.hbase.HbaseUtils;
 
 /**
- * The Entity Class for mapped by hbase table
+ * The base entity(ORM) class for mapped hbase table
  * 
  * @author Ponfee
  * @param <R> the row key type
  */
-public abstract class HbaseEntity<R extends Serializable & Comparable<? super R>>
-    implements HbaseBean<R> {
+public interface HbaseEntity<R extends Comparable<? super R> & Serializable>
+    extends Comparable<HbaseEntity<R>>, Serializable {
 
-    private static final long serialVersionUID = 2467942701509706341L;
+    /**
+     * Returns the hbase row key
+     * 
+     * @return a hbase row key
+     */
+    R getRowKey();
 
-    @HbaseField(ignore = true)
-    protected R rowKey;
+    /**
+     * Returns the row number for current page result
+     * 
+     * @return a int row number of page
+     */
+    int getRowNum();
 
-    @HbaseField(ignore = true)
-    protected int rowNum;
+    /**
+     * Sets row key to hbase entity
+     * 
+     * @param rowKey the hbase row key
+     */
+    void setRowKey(R rowKey);
 
-    /*@HbaseField(ignore = true)
-    protected int sequenceId;
-    @HbaseField(ignore = true)
-    protected int timestamp;*/
+    /**
+     * Sets row number for page data list
+     * 
+     * @param rowNum the current page data list row number
+     */
+    void setRowNum(int rowNum);
 
-    @Override
-    public final R getRowKey() {
-        return rowKey;
+    //int getTimestamp();
+    //int getSequenceId();
+
+    // ----------------------------------------------default methods
+    /**
+     * Returns the data object hbase rowkey, 
+     * sub class can override this methods
+     * 
+     * @return a rowkey
+     */
+    default R buildRowKey() {
+        return this.getRowKey();
     }
 
-    @Override
-    public final int getRowNum() {
-        return rowNum;
+    /**
+     * Returns a string of row key,
+     * Sub class can override this method
+     * 
+     * @return row key as string
+     */
+    @Transient
+    default String getRowKeyAsString() {
+        return Objects.toString(getRowKey(), null);
     }
 
-    @Override
-    public final void setRowKey(R rowKey) {
-        this.rowKey = rowKey;
+    /**
+     * Returns a byte array of row key,
+     * Sub class can override this method
+     * 
+     * @return row key as byte array
+     */
+    @Transient
+    default byte[] getRowKeyAsBytes() {
+        return HbaseUtils.toBytes(getRowKey());
     }
 
+    // -------------------------------------------Comparable & Object
     @Override
-    public final void setRowNum(int rowNum) {
-        this.rowNum = rowNum;
+    default int compareTo(HbaseEntity<R> other) {
+        return new CompareToBuilder()
+            .append(this.getRowKey(), other.getRowKey())
+            .toComparison();
     }
 
-    @Override
-    public int hashCode() {
-        return HbaseBean.super.hashCode0();
+    default int hashCode0() {
+        R rowKey;
+        return (rowKey = this.getRowKey()) == null 
+               ? 0 : rowKey.hashCode();
+
+        /*return new HashCodeBuilder()
+            .append(this.getRowKey())
+            .toHashCode();*/
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return HbaseBean.super.equals0(obj);
+    @SuppressWarnings("unchecked")
+    default boolean equals0(Object obj) {
+        if (!this.getClass().isInstance(obj)) {
+            return false;
+        }
+
+        R tkey, okey;
+        return (tkey = this.getRowKey()) == null
+            || (okey = ((HbaseEntity<R>) obj).getRowKey()) == null
+            ? false : tkey.equals(okey);
+
+        /*return new EqualsBuilder()
+                .append(this.getRowKey(), ((HbaseMap<?, R>) obj)
+                .getRowKey()).isEquals();*/
     }
 
-    @Override
-    public String toString() {
-        return HbaseBean.super.toString0();
+    default String toString0() {
+        return new StringBuilder(this.getClass().getName())
+            .append("@").append(this.getRowKey()).toString();
+        //return new ToStringBuilder(this).toString();
     }
 
 }
