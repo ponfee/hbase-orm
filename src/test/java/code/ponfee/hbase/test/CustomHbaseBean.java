@@ -30,7 +30,7 @@ import io.netty.util.internal.ThreadLocalRandom;
  * 
  * @author Ponfee
  */
-@HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "t_bean_entity", family = "cf1")
+@HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "test_hbase_bean", family = "cf1")
 public class CustomHbaseBean extends HbaseBean<String> {
 
     private static final long serialVersionUID = 4412422627257733721L;

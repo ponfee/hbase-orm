@@ -13,12 +13,12 @@ import code.ponfee.commons.reflect.BeanMaps;
 import code.ponfee.commons.util.Dates;
 import code.ponfee.hbase.HbaseBatchDao;
 import code.ponfee.hbase.SpringBaseTest;
-import code.ponfee.hbase.test1.BeanMapDaoTest.BeanMapDao;
+import code.ponfee.hbase.test.CustomHbaseMapDaoTest.CustomHbaseMapDao;
 
-public class CustomHbaseMapDaoTest extends SpringBaseTest<BeanMapDao> {
+public class CustomHbaseMapDaoTest extends SpringBaseTest<CustomHbaseMapDao> {
 
-    @Repository("beanMapDao")
-    public static class BeanMapDao extends HbaseBatchDao<CustomHbaseMap, String> {
+    @Repository("customHbaseMapDao")
+    public static class CustomHbaseMapDao extends HbaseBatchDao<CustomHbaseMap, String> {
     }
 
     @Test
@@ -52,6 +52,7 @@ public class CustomHbaseMapDaoTest extends SpringBaseTest<BeanMapDao> {
 
             CustomHbaseMap beanMap= new CustomHbaseMap();
             beanMap.putAll(BeanMaps.CGLIB.toMap(entity));
+
             beanMap.put("empty_string", "");
             beanMap.put("blank_string", "   ");
             beanMap.put("null_string", null);

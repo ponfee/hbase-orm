@@ -19,12 +19,12 @@ import code.ponfee.commons.util.Dates;
 import code.ponfee.hbase.HbaseBatchDao;
 import code.ponfee.hbase.SpringBaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
-import code.ponfee.hbase.test1.BeanEntityDaoTest.BeanEntityDao;
+import code.ponfee.hbase.test.CustomHbaseBeanDaoTest.CustomHbaseBeanDao;
 
-public class CustomHbaseBeanDaoTest extends SpringBaseTest<BeanEntityDao> {
+public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
 
-    @Repository("beanEntityDao")
-    public static class BeanEntityDao extends HbaseBatchDao<CustomHbaseBean, String> {
+    @Repository("customHbaseBeanDao")
+    public static class CustomHbaseBeanDao extends HbaseBatchDao<CustomHbaseBean, String> {
     }
 
     private static final int PAGE_SIZE = 50;

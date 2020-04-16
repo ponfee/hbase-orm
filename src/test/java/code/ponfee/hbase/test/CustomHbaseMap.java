@@ -4,7 +4,7 @@ import code.ponfee.hbase.Constants;
 import code.ponfee.hbase.annotation.HbaseTable;
 import code.ponfee.hbase.model.HbaseMap;
 
-@HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "t_bean_map", family = "cf1")
+@HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "test_hbase_map", family = "cf1")
 public class CustomHbaseMap extends HbaseMap<String> {
 
     private static final long serialVersionUID = 1L;
