@@ -6,7 +6,7 @@
 **                      \/          \/     \/                             **
 \*                                                                        */
 
-package code.ponfee.hbase.test1;
+package code.ponfee.hbase.test;
 
 import java.util.Date;
 
@@ -31,7 +31,7 @@ import io.netty.util.internal.ThreadLocalRandom;
  * @author Ponfee
  */
 @HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "t_bean_entity", family = "cf1")
-public class BeanEntity extends HbaseBean<String> {
+public class CustomHbaseBean extends HbaseBean<String> {
 
     private static final long serialVersionUID = 4412422627257733721L;
 

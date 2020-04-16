@@ -1,4 +1,4 @@
-package code.ponfee.hbase.test1;
+package code.ponfee.hbase.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,10 @@ import code.ponfee.hbase.HbaseBatchDao;
 import code.ponfee.hbase.SpringBaseTest;
 import code.ponfee.hbase.test1.BeanMapDaoTest.BeanMapDao;
 
-public class BeanMapDaoTest extends SpringBaseTest<BeanMapDao> {
+public class CustomHbaseMapDaoTest extends SpringBaseTest<BeanMapDao> {
 
     @Repository("beanMapDao")
-    public static class BeanMapDao extends HbaseBatchDao<BeanMap, String> {
+    public static class BeanMapDao extends HbaseBatchDao<CustomHbaseMap, String> {
     }
 
     @Test
@@ -41,16 +41,16 @@ public class BeanMapDaoTest extends SpringBaseTest<BeanMapDao> {
     @Test
     //@Ignore
     public void batchPut() {
-        List<BeanMap> batch = new ArrayList<>();
+        List<CustomHbaseMap> batch = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
-            BeanEntity entity = new BeanEntity();
+            CustomHbaseBean entity = new CustomHbaseBean();
             entity.setFirstName("fu");
             entity.setLastName("ponfee");
             entity.setAge(ThreadLocalRandom.current().nextInt(60) + 10);
             entity.setBirthday(Dates.random(Dates.ofMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
             entity.buildRowKey();
 
-            BeanMap beanMap= new BeanMap();
+            CustomHbaseMap beanMap= new CustomHbaseMap();
             beanMap.putAll(BeanMaps.CGLIB.toMap(entity));
             beanMap.put("empty_string", "");
             beanMap.put("blank_string", "   ");

@@ -11,6 +11,6 @@ public final class Constants {
 
     public static final String UTF_8 = "UTF-8";
 
-    public static final String HBASE_NAMESPACE = "ponfee";
+    public static final String HBASE_NAMESPACE = "default";
 
 }

@@ -8,13 +8,6 @@
     http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd 
   ">
 
-  <!-- <hdp:configuration resources="classpath:hbase-site.xml"/>
-  <hdp:hbase-configuration configuration-ref="hadoopConfiguration" delete-connection="false" />
-  <bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate">
-    <property name="configuration" ref="hbaseConfiguration" />
-    <property name="encoding" value="UTF-8" />
-  </bean> -->
-
   <!-- 
     hbase.client.operation.timeout：表示HBase客户端发起一次数据操作直至得到响应之间总的超时时间
     hbase.client.scanner.timeout.period：表示HBase客户端发起一次scan操作的rpc调用至得到响应之间总的超时时间

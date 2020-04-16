@@ -15,7 +15,7 @@ import code.ponfee.commons.util.SpringContextHolder;
  * @author Ponfee
  * @param <T>
  */
-@RunWith(SpringRunner.class) // SpringJUnit4ClassRunner.class
+@RunWith(SpringRunner.class)
 @ContextConfiguration(locations = { "classpath:test-hbase.xml" })
 public abstract class SpringBaseTest<T> {
 

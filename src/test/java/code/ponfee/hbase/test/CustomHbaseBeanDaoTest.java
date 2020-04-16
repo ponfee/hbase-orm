@@ -3,73 +3,58 @@ package code.ponfee.hbase.test;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Lists;
 
 import code.ponfee.commons.json.Jsons;
 import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.util.Dates;
+import code.ponfee.hbase.HbaseBatchDao;
 import code.ponfee.hbase.SpringBaseTest;
 import code.ponfee.hbase.model.PageQueryBuilder;
-import code.ponfee.hbase.other.ExtendsHbaseEntity;
-import code.ponfee.hbase.other.ExtendsHbaseEntityDao;
+import code.ponfee.hbase.test1.BeanEntityDaoTest.BeanEntityDao;
 
-public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
+public class CustomHbaseBeanDaoTest extends SpringBaseTest<BeanEntityDao> {
+
+    @Repository("beanEntityDao")
+    public static class BeanEntityDao extends HbaseBatchDao<CustomHbaseBean, String> {
+    }
+
     private static final int PAGE_SIZE = 50;
 
     @Test
-    @Ignore
+    //@Ignore
     public void dropTable() {
         System.out.println(getBean().dropTable());
     }
-    
+
     @Test
-    @Ignore
+    //@Ignore
     public void createTable() {
         System.out.println(getBean().createTable());
     }
-    
+
     @Test
     public void descTable() {
         System.out.println(getBean().descTable());
     }
 
     @Test
-    @Ignore
+    //@Ignore
     public void batchPut() {
-        List<ExtendsHbaseEntity> batch = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            ExtendsHbaseEntity entity = new ExtendsHbaseEntity();
-            //entity.setFirstName(RandomStringUtils.randomAlphabetic(3));
-            //entity.setLastName(RandomStringUtils.randomAlphabetic(3));
+        List<CustomHbaseBean> batch = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            CustomHbaseBean entity = new CustomHbaseBean();
             entity.setFirstName("fu");
             entity.setLastName("ponfee");
-            entity.setAge(ThreadLocalRandom.current().nextInt(60)+10);
-            switch (new Random().nextInt(4)) {
-                case 0:
-                    entity.setNonce(null);
-                    break;
-                case 1:
-                    entity.setNonce("");
-                    break;
-                case 2:
-                    entity.setNonce(" ");
-                    break;
-                case 3:
-                    entity.setNonce(RandomStringUtils.randomAlphabetic(4));
-                    break;
-                default:
-                    break;
-            }
+            entity.setAge(ThreadLocalRandom.current().nextInt(60) + 10);
             entity.setBirthday(Dates.random(Dates.ofMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
             entity.buildRowKey();
             batch.add(entity);
@@ -117,7 +102,7 @@ public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
 
     @Test
     public void findAll() {
-        List<ExtendsHbaseEntity> list = (List<ExtendsHbaseEntity>) getBean().range(null, null);
+        List<CustomHbaseBean> list = (List<CustomHbaseBean>) getBean().range(null, null);
         System.out.println("======================" + list.size());
         consoleJson(list);
     }
@@ -125,8 +110,8 @@ public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
     @Test
     public void nextPage() {
         PageQueryBuilder query = PageQueryBuilder.newBuilder(5, SortOrder.ASC);
-        query.addColumns("cf1",  "first_name");
-        query.addColumns("cf1",  "age");
+        query.addColumns("cf1", "first_name");
+        query.addColumns("cf1", "age");
         //query.startRowKey("fu_ponfee_20070309");
         query.prefixRowKey("fu_ponfee_200703".getBytes());
         //query.regexpRowKey("^fu_ponfee_2\\d{2}1.*1$");
@@ -136,13 +121,13 @@ public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
     @Test
     public void nextPageAll() {
         PageQueryBuilder query = PageQueryBuilder.newBuilder(PAGE_SIZE, SortOrder.ASC);
-        query.addColumns("cf1",  "first_name");
+        query.addColumns("cf1", "first_name");
         //Set<String> set = new TreeSet<>();
         Set<String> set = new LinkedHashSet<>();
-        getBean().scrollQuery(query, (pageNum, data)->{
+        getBean().scrollQuery(query, (pageNum, data) -> {
             System.err.println("======================pageNum: " + pageNum);
             consoleJson(data);
-            data.stream().forEach(m -> set.add((String)m.getRowKey()));
+            data.stream().forEach(m -> set.add((String) m.getRowKey()));
         });
         System.err.println("======================" + set.size());
         consoleJson(set);
@@ -160,16 +145,16 @@ public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
         PageQueryBuilder query = PageQueryBuilder.newBuilder(11, SortOrder.DESC);
         //query.setStartRow("fu_ponfee_20181128");
         //query.setFamQuaes(ImmutableMap.of("cf1", new String[] { "first_name" }));
-        List<ExtendsHbaseEntity> data = new ArrayList<>();
+        List<CustomHbaseBean> data = new ArrayList<>();
         int count = 1;
-        List<ExtendsHbaseEntity> list = (List<ExtendsHbaseEntity>) getBean().previousPage(query);
+        List<CustomHbaseBean> list = (List<CustomHbaseBean>) getBean().previousPage(query);
         while (CollectionUtils.isNotEmpty(list) && list.size() == query.pageSize()) {
-            count ++;
+            count++;
             data.addAll(list);
             consoleJson(list);
             consoleJson((String) query.previousPageStartRow(list).getRowKey());
             query.startRowKey((String) query.previousPageStartRow(list).getRowKey());
-            list = (List<ExtendsHbaseEntity>) getBean().previousPage(query);
+            list = (List<CustomHbaseBean>) getBean().previousPage(query);
         }
         if (CollectionUtils.isNotEmpty(list)) {
             data.addAll(list);
@@ -178,7 +163,7 @@ public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
         }
         Set<String> set = new LinkedHashSet<>();
         //Set<String> set = new TreeSet<>();
-        data.stream().forEach(m -> set.add((String)m.getRowKey()));
+        data.stream().forEach(m -> set.add((String) m.getRowKey()));
         System.out.println("======================round: " + count);
         System.out.println("======================" + set.size());
         consoleJson(set);
@@ -254,13 +239,13 @@ public class HbaeDaoEntityTest extends SpringBaseTest<ExtendsHbaseEntityDao>{
         //query.notRange("cf1", "birthday", "20000213".getBytes(), "20000501".getBytes());
         printJson(getBean().nextPage(query));
     }
-    
+
     @Test
-    @Ignore
+    //@Ignore
     public void delete() {
-        consoleJson(getBean().get("fu_ponfee_20011031"));
-        consoleJson(getBean().delete(Lists.newArrayList("fu_ponfee_20011031","fu_ponfee_20110531" )));
-        consoleJson(getBean().get("fu_ponfee_20110531"));
+        consoleJson(getBean().get("fu_ponfee_19840415"));
+        consoleJson(getBean().delete(Lists.newArrayList("fu_ponfee_19840415", "fu_ponfee_20110531")));
+        consoleJson(getBean().get("fu_ponfee_19840415"));
     }
 
     private static void printJson(Object obj) {
