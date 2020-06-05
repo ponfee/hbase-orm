@@ -13,7 +13,7 @@ import code.ponfee.commons.util.Bytes;
  */
 public abstract class DateBytesConvertor {
 
-    public static DateBytesConvertor TIMESTAMP = new DateBytesConvertor() {
+    public static final DateBytesConvertor TIMESTAMP = new DateBytesConvertor() {
         @Override
         protected byte[] toBytes0(Date date) {
             return Bytes.toBytes(date.getTime());
