@@ -73,7 +73,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
-import code.ponfee.commons.cache.TimestampProvider;
+import code.ponfee.commons.base.TimestampProvider;
 import code.ponfee.commons.io.Closeables;
 import code.ponfee.commons.model.SortOrder;
 import code.ponfee.commons.reflect.BeanMaps;
