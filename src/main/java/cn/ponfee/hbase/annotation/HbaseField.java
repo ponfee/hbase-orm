@@ -1,14 +1,9 @@
-package code.ponfee.hbase.annotation;
+package cn.ponfee.hbase.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import cn.ponfee.commons.serial.NullSerializer;
+import cn.ponfee.commons.serial.Serializer;
 
-import code.ponfee.commons.serial.NullSerializer;
-import code.ponfee.commons.serial.Serializer;
+import java.lang.annotation.*;
 
 /**
  * Entity field mapping to hbase column
@@ -38,5 +33,6 @@ public @interface HbaseField {
     String[] format() default {};
 
     // ---------------------------------------public static final field
+
     String FORMAT_TIMESTAMP = "timestamp";
 }

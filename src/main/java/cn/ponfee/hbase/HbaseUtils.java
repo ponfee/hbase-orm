@@ -1,16 +1,15 @@
-package code.ponfee.hbase;
+package cn.ponfee.hbase;
 
-import static code.ponfee.commons.serial.WrappedSerializer.WRAPPED_TOSTRING_SERIALIZER;
-
-import java.util.Arrays;
-
+import cn.ponfee.commons.math.Maths;
+import cn.ponfee.commons.math.Numbers;
+import cn.ponfee.commons.util.Bytes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
-import code.ponfee.commons.math.Maths;
-import code.ponfee.commons.math.Numbers;
-import code.ponfee.commons.util.Bytes;
+import java.util.Arrays;
+
+import static cn.ponfee.commons.serial.WrappedSerializer.WRAPPED_TOSTRING_SERIALIZER;
 
 /**
  * Hbase utility class
@@ -71,7 +70,7 @@ public final class HbaseUtils {
         byte[] prefixBytes = Bytes.toBytes(rowKeyPrefix);
         int length = prefixBytes.length + paddingLength;
         byte[] rowKeyBytes = Arrays.copyOf(prefixBytes, length);
-        if (padding != Numbers.BYTE_ZERO) {
+        if (padding != Numbers.ZERO_BYTE) {
             Arrays.fill(rowKeyBytes, prefixBytes.length, length, padding);
         }
         return rowKeyBytes;

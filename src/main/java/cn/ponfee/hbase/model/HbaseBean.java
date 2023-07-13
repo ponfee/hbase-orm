@@ -1,8 +1,8 @@
-package code.ponfee.hbase.model;
+package cn.ponfee.hbase.model;
+
+import cn.ponfee.hbase.annotation.HbaseField;
 
 import java.io.Serializable;
-
-import code.ponfee.hbase.annotation.HbaseField;
 
 /**
  * The Java bean class for mapped hbase table

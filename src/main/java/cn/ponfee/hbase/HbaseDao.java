@@ -1,42 +1,20 @@
-package code.ponfee.hbase;
+package cn.ponfee.hbase;
 
-import static code.ponfee.hbase.HbaseUtils.fromBytes;
-import static code.ponfee.hbase.HbaseUtils.toBytes;
-import static code.ponfee.hbase.model.HbaseMap.ROW_KEY_NAME;
-import static code.ponfee.hbase.model.HbaseMap.ROW_NUM_NAME;
-import static com.google.common.base.CaseFormat.LOWER_CAMEL;
-import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
-import static org.apache.hadoop.hbase.CellUtil.cloneQualifier;
-import static org.apache.hadoop.hbase.CellUtil.cloneValue;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Resource;
-
+import cn.ponfee.commons.base.TimestampProvider;
+import cn.ponfee.commons.io.Closeables;
+import cn.ponfee.commons.model.SortOrder;
+import cn.ponfee.commons.reflect.*;
+import cn.ponfee.commons.serial.NullSerializer;
+import cn.ponfee.commons.serial.Serializer;
+import cn.ponfee.commons.util.Bytes;
+import cn.ponfee.commons.util.ObjectUtils;
+import cn.ponfee.hbase.annotation.HbaseField;
+import cn.ponfee.hbase.annotation.HbaseTable;
+import cn.ponfee.hbase.model.*;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -46,52 +24,34 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Table;
-import org.apache.hadoop.hbase.filter.CompareFilter;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.*;
 import org.apache.hadoop.hbase.filter.FilterList.Operator;
-import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
-import org.apache.hadoop.hbase.filter.InclusiveStopFilter;
-import org.apache.hadoop.hbase.filter.PageFilter;
-import org.apache.hadoop.hbase.filter.PrefixFilter;
-import org.apache.hadoop.hbase.filter.RegexStringComparator;
-import org.apache.hadoop.hbase.filter.RowFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.hadoop.hbase.HbaseTemplate;
 import org.springframework.data.hadoop.hbase.RowMapper;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import javax.annotation.Nonnull;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import code.ponfee.commons.base.TimestampProvider;
-import code.ponfee.commons.io.Closeables;
-import code.ponfee.commons.model.SortOrder;
-import code.ponfee.commons.reflect.BeanMaps;
-import code.ponfee.commons.reflect.CglibUtils;
-import code.ponfee.commons.reflect.ClassUtils;
-import code.ponfee.commons.reflect.Fields;
-import code.ponfee.commons.reflect.GenericUtils;
-import code.ponfee.commons.serial.NullSerializer;
-import code.ponfee.commons.serial.Serializer;
-import code.ponfee.commons.util.Bytes;
-import code.ponfee.commons.util.ObjectUtils;
-import code.ponfee.hbase.annotation.HbaseField;
-import code.ponfee.hbase.annotation.HbaseTable;
-import code.ponfee.hbase.model.Column;
-import code.ponfee.hbase.model.HbaseEntity;
-import code.ponfee.hbase.model.HbaseBean;
-import code.ponfee.hbase.model.HbaseMap;
-import code.ponfee.hbase.model.PageQueryBuilder;
+import static cn.ponfee.hbase.HbaseUtils.fromBytes;
+import static cn.ponfee.hbase.HbaseUtils.toBytes;
+import static cn.ponfee.hbase.model.HbaseMap.ROW_KEY_NAME;
+import static cn.ponfee.hbase.model.HbaseMap.ROW_NUM_NAME;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.hadoop.hbase.CellUtil.cloneQualifier;
+import static org.apache.hadoop.hbase.CellUtil.cloneValue;
 
 /**
  * The Hbase dao common base class
@@ -102,7 +62,7 @@ import code.ponfee.hbase.model.PageQueryBuilder;
  */
 public abstract class HbaseDao<T extends HbaseEntity<R>, R extends Serializable & Comparable<? super R>> {
 
-    private static Logger logger = LoggerFactory.getLogger(HbaseDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(HbaseDao.class);
 
     private static final Map<Class<? extends Serializer>, Serializer> REGISTERED_SERIALIZER = 
         new /*ConcurrentHashMap*/HashMap<>();
@@ -223,15 +183,15 @@ public abstract class HbaseDao<T extends HbaseEntity<R>, R extends Serializable 
         } else {
             to = ObjectUtils.newInstance(this.entityType);
             if (Map.class.isAssignableFrom(this.entityType)) {
-                if (Map.class.isInstance(from)) {
+                if (from instanceof Map) {
                     ((Map) to).putAll((Map<?, ?>) from);
                 } else {
                     ((Map) to).putAll(BeanMaps.CGLIB.toMap(from));
                 }
-            } else if (Map.class.isInstance(from)) {
+            } else if (from instanceof Map) {
                 BeanMaps.CGLIB.copyFromMap((Map) from, to);
             } else {
-                CglibUtils.copyProperties(from, to);
+                BeanCopiers.copy(from, to);
             }
         }
         if (action != null) {

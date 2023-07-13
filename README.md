@@ -1,8 +1,8 @@
 # commons-hbase
 
-## 简介
-**定位为提供对hbase操作的组件（类似hibernate对关系数据库操作的封装）**
+## Introduction
+**commons-hbase is ORM framework for Hbase, Just like Hibernate for relational databases.**
 
-## 使用说明
-- has schema case：[**`CustomHbaseBeanDaoTest`**](https://github.com/ponfee/commons-hbase/blob/master/src/test/java/code/ponfee/hbase/test/CustomHbaseBeanDaoTest.java)
-- non schema case：[**`CustomHbaseMapDaoTest`**](https://github.com/ponfee/commons-hbase/blob/master/src/test/java/code/ponfee/hbase/test/CustomHbaseMapDaoTest.java)
+## Usage
+- strict  schema case：[**`CustomHbaseBeanDaoTest`**](src/test/java/cn/ponfee/hbase/test/CustomHbaseBeanDaoTest.java)
+- lenient schema case：[**`CustomHbaseMapDaoTest`**](src/test/java/cn/ponfee/hbase/test/CustomHbaseMapDaoTest.java)

@@ -1,4 +1,4 @@
-package code.ponfee.hbase;
+package cn.ponfee.hbase;
 
 /**
  * The common Constant class

@@ -1,19 +1,17 @@
-package code.ponfee.hbase.test;
+package cn.ponfee.hbase.test;
+
+import cn.ponfee.commons.date.Dates;
+import cn.ponfee.commons.reflect.BeanMaps;
+import cn.ponfee.hbase.HbaseBatchDao;
+import cn.ponfee.hbase.SpringBaseTest;
+import cn.ponfee.hbase.test.CustomHbaseMapDaoTest.CustomHbaseMapDao;
+import com.google.common.collect.Lists;
+import org.junit.Test;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.junit.Test;
-import org.springframework.stereotype.Repository;
-
-import com.google.common.collect.Lists;
-
-import code.ponfee.commons.reflect.BeanMaps;
-import code.ponfee.commons.util.Dates;
-import code.ponfee.hbase.HbaseBatchDao;
-import code.ponfee.hbase.SpringBaseTest;
-import code.ponfee.hbase.test.CustomHbaseMapDaoTest.CustomHbaseMapDao;
 
 public class CustomHbaseMapDaoTest extends SpringBaseTest<CustomHbaseMapDao> {
 
@@ -47,7 +45,7 @@ public class CustomHbaseMapDaoTest extends SpringBaseTest<CustomHbaseMapDao> {
             entity.setFirstName("fu");
             entity.setLastName("ponfee");
             entity.setAge(ThreadLocalRandom.current().nextInt(60) + 10);
-            entity.setBirthday(Dates.random(Dates.ofMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
+            entity.setBirthday(Dates.random(Dates.ofTimeMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
             entity.buildRowKey();
 
             CustomHbaseMap beanMap= new CustomHbaseMap();

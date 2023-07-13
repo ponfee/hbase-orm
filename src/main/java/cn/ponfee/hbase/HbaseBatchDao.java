@@ -1,7 +1,18 @@
-package code.ponfee.hbase;
+package cn.ponfee.hbase;
 
-import static code.ponfee.hbase.HbaseUtils.nextStartRowKey;
+import cn.ponfee.commons.collect.ByteArrayWrapper;
+import cn.ponfee.commons.concurrent.MultithreadExecutors;
+import cn.ponfee.hbase.model.HbaseEntity;
+import cn.ponfee.hbase.model.PageQueryBuilder;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.Scan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.hadoop.hbase.HbaseTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,20 +28,7 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.annotation.Resource;
-
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.Scan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.hadoop.hbase.HbaseTemplate;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import code.ponfee.commons.collect.ByteArrayWrapper;
-import code.ponfee.commons.concurrent.MultithreadExecutor;
-import code.ponfee.hbase.model.HbaseEntity;
-import code.ponfee.hbase.model.PageQueryBuilder;
+import static cn.ponfee.hbase.HbaseUtils.nextStartRowKey;
 
 /**
  * The Hbase dao common base class
@@ -43,7 +41,7 @@ import code.ponfee.hbase.model.PageQueryBuilder;
 public abstract class HbaseBatchDao<T extends HbaseEntity<R>, R extends Serializable & Comparable<? super R>> 
     extends HbaseDao<T, R> {
 
-    private static Logger logger = LoggerFactory.getLogger(HbaseBatchDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(HbaseBatchDao.class);
 
     protected @Resource ThreadPoolTaskExecutor taskExecutor;
 
@@ -209,7 +207,7 @@ public abstract class HbaseBatchDao<T extends HbaseEntity<R>, R extends Serializ
                                 int round, String operation) {
         try {
             AtomicBoolean result = new AtomicBoolean(true);
-            MultithreadExecutor.join(
+            MultithreadExecutors.join(
                 service, round, 
                 b -> result.set(result.get() & b)
             );

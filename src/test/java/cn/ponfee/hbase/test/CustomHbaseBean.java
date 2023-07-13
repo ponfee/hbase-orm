@@ -6,24 +6,23 @@
 **                      \/          \/     \/                             **
 \*                                                                        */
 
-package code.ponfee.hbase.test;
+package cn.ponfee.hbase.test;
+
+import cn.ponfee.commons.collect.ByteArrayWrapper;
+import cn.ponfee.commons.date.Dates;
+import cn.ponfee.commons.model.Result;
+import cn.ponfee.commons.serial.KryoSerializer;
+import cn.ponfee.commons.serial.ToStringSerializer;
+import cn.ponfee.commons.serial.WrappedSerializer;
+import cn.ponfee.commons.util.SecureRandoms;
+import cn.ponfee.hbase.Constants;
+import cn.ponfee.hbase.annotation.HbaseField;
+import cn.ponfee.hbase.annotation.HbaseTable;
+import cn.ponfee.hbase.model.HbaseBean;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.netty.util.internal.ThreadLocalRandom;
 
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import code.ponfee.commons.collect.ByteArrayWrapper;
-import code.ponfee.commons.model.Result;
-import code.ponfee.commons.serial.WrappedSerializer;
-import code.ponfee.commons.serial.KryoSerializer;
-import code.ponfee.commons.serial.ToStringSerializer;
-import code.ponfee.commons.util.Dates;
-import code.ponfee.commons.util.SecureRandoms;
-import code.ponfee.hbase.Constants;
-import code.ponfee.hbase.annotation.HbaseField;
-import code.ponfee.hbase.annotation.HbaseTable;
-import code.ponfee.hbase.model.HbaseBean;
-import io.netty.util.internal.ThreadLocalRandom;
 
 /**
  * 
@@ -94,7 +93,7 @@ public class CustomHbaseBean extends HbaseBean<String> {
     private ByteArrayWrapper baw = ByteArrayWrapper.of(SecureRandoms.nextBytes(5));
 
     @HbaseField(serializer = KryoSerializer.class)
-    private Result<String> res = Result.of(12, "test");
+    private Result<String> res = Result.failure(12, "test");
 
     @HbaseField(format = "yyyyMMdd")
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")

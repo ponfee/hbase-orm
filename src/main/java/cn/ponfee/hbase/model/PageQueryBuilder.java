@@ -1,34 +1,23 @@
-package code.ponfee.hbase.model;
+package cn.ponfee.hbase.model;
 
-import static code.ponfee.commons.util.Bytes.toBytes;
+import cn.ponfee.commons.collect.Collects;
+import cn.ponfee.commons.model.SortOrder;
+import cn.ponfee.commons.util.ObjectUtils;
+import com.google.common.base.Preconditions;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.hadoop.hbase.filter.*;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.FilterList.Operator;
+import org.springframework.util.Assert;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.hadoop.hbase.filter.BinaryComparator;
-import org.apache.hadoop.hbase.filter.BinaryPrefixComparator;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.FilterList.Operator;
-import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
-import org.apache.hadoop.hbase.filter.RegexStringComparator;
-import org.apache.hadoop.hbase.filter.RowFilter;
-import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
-import org.apache.hadoop.hbase.filter.SubstringComparator;
-import org.springframework.util.Assert;
-
-import com.google.common.base.Preconditions;
-
-import code.ponfee.commons.collect.Collects;
-import code.ponfee.commons.model.SortOrder;
-import code.ponfee.commons.util.ObjectUtils;
+import static cn.ponfee.commons.util.Bytes.toBytes;
 
 /**
  * Page query for hbase

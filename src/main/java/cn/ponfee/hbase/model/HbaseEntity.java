@@ -1,12 +1,11 @@
-package code.ponfee.hbase.model;
+package cn.ponfee.hbase.model;
+
+import cn.ponfee.hbase.HbaseUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Objects;
-
-import org.apache.commons.lang3.builder.CompareToBuilder;
-
-import code.ponfee.hbase.HbaseUtils;
 
 /**
  * The base entity(ORM) class for mapped hbase table
@@ -106,9 +105,9 @@ public interface HbaseEntity<R extends Comparable<? super R> & Serializable>
         }
 
         R tkey, okey;
-        return (tkey = this.getRowKey()) == null
-            || (okey = ((HbaseEntity<R>) obj).getRowKey()) == null
-            ? false : tkey.equals(okey);
+        return (tkey = this.getRowKey()) != null
+            && (okey = ((HbaseEntity<R>) obj).getRowKey()) != null
+            && tkey.equals(okey);
 
         /*return new EqualsBuilder()
                 .append(this.getRowKey(), ((HbaseMap<?, R>) obj)

@@ -1,14 +1,13 @@
-package code.ponfee.hbase;
+package cn.ponfee.hbase;
 
+import cn.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.reflect.GenericUtils;
+import cn.ponfee.commons.spring.SpringContextHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.reflect.GenericUtils;
-import code.ponfee.commons.util.SpringContextHolder;
 
 /**
  * 测试基类

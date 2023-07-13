@@ -1,25 +1,23 @@
-package code.ponfee.hbase.test;
+package cn.ponfee.hbase.test;
+
+import cn.ponfee.commons.date.Dates;
+import cn.ponfee.commons.json.Jsons;
+import cn.ponfee.commons.model.SortOrder;
+import cn.ponfee.hbase.HbaseBatchDao;
+import cn.ponfee.hbase.SpringBaseTest;
+import cn.ponfee.hbase.model.PageQueryBuilder;
+import cn.ponfee.hbase.test.CustomHbaseBeanDaoTest.CustomHbaseBeanDao;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.junit.Test;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.junit.Test;
-import org.springframework.stereotype.Repository;
-
-import com.google.common.collect.Lists;
-
-import code.ponfee.commons.json.Jsons;
-import code.ponfee.commons.model.SortOrder;
-import code.ponfee.commons.util.Dates;
-import code.ponfee.hbase.HbaseBatchDao;
-import code.ponfee.hbase.SpringBaseTest;
-import code.ponfee.hbase.model.PageQueryBuilder;
-import code.ponfee.hbase.test.CustomHbaseBeanDaoTest.CustomHbaseBeanDao;
 
 public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
 
@@ -55,7 +53,7 @@ public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
             entity.setFirstName("fu");
             entity.setLastName("ponfee");
             entity.setAge(ThreadLocalRandom.current().nextInt(60) + 10);
-            entity.setBirthday(Dates.random(Dates.ofMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
+            entity.setBirthday(Dates.random(Dates.ofTimeMillis(0), Dates.toDate("20000101", "yyyyMMdd")));
             entity.buildRowKey();
             batch.add(entity);
         }
@@ -102,7 +100,7 @@ public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
 
     @Test
     public void findAll() {
-        List<CustomHbaseBean> list = (List<CustomHbaseBean>) getBean().range(null, null);
+        List<CustomHbaseBean> list = getBean().range(null, null);
         System.out.println("======================" + list.size());
         consoleJson(list);
     }
@@ -127,7 +125,7 @@ public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
         getBean().scrollQuery(query, (pageNum, data) -> {
             System.err.println("======================pageNum: " + pageNum);
             consoleJson(data);
-            data.stream().forEach(m -> set.add((String) m.getRowKey()));
+            data.stream().forEach(m -> set.add(m.getRowKey()));
         });
         System.err.println("======================" + set.size());
         consoleJson(set);
@@ -147,23 +145,23 @@ public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
         //query.setFamQuaes(ImmutableMap.of("cf1", new String[] { "first_name" }));
         List<CustomHbaseBean> data = new ArrayList<>();
         int count = 1;
-        List<CustomHbaseBean> list = (List<CustomHbaseBean>) getBean().previousPage(query);
+        List<CustomHbaseBean> list = getBean().previousPage(query);
         while (CollectionUtils.isNotEmpty(list) && list.size() == query.pageSize()) {
             count++;
             data.addAll(list);
             consoleJson(list);
-            consoleJson((String) query.previousPageStartRow(list).getRowKey());
-            query.startRowKey((String) query.previousPageStartRow(list).getRowKey());
-            list = (List<CustomHbaseBean>) getBean().previousPage(query);
+            consoleJson(query.previousPageStartRow(list).getRowKey());
+            query.startRowKey(query.previousPageStartRow(list).getRowKey());
+            list = getBean().previousPage(query);
         }
         if (CollectionUtils.isNotEmpty(list)) {
             data.addAll(list);
             consoleJson(list);
-            consoleJson((String) query.previousPageStartRow(list).getRowKey());
+            consoleJson(query.previousPageStartRow(list).getRowKey());
         }
         Set<String> set = new LinkedHashSet<>();
         //Set<String> set = new TreeSet<>();
-        data.stream().forEach(m -> set.add((String) m.getRowKey()));
+        data.stream().forEach(m -> set.add(m.getRowKey()));
         System.out.println("======================round: " + count);
         System.out.println("======================" + set.size());
         consoleJson(set);
@@ -249,6 +247,6 @@ public class CustomHbaseBeanDaoTest extends SpringBaseTest<CustomHbaseBeanDao> {
     }
 
     private static void printJson(Object obj) {
-        System.err.println(Jsons.NON_NULL.string(obj));
+        System.err.println(Jsons.toJson(obj));
     }
 }

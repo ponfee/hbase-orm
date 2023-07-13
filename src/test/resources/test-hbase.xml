@@ -9,7 +9,7 @@
     http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
   ">
 
-  <context:component-scan base-package="code.ponfee.hbase" />
+  <context:component-scan base-package="cn.ponfee.hbase" />
   <import resource="classpath:spring-data-hbase.xml" />
 
   <bean id="sysconfig" 
@@ -21,7 +21,7 @@
     </property>
   </bean>
 
-  <bean class="code.ponfee.commons.util.SpringContextHolder" />
+  <bean class="cn.ponfee.commons.spring.SpringContextHolder" />
 
   <!-- 
     reference: http://www.springframework.org/schema/task/spring-task.xsd

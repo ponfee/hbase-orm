@@ -1,12 +1,11 @@
-package code.ponfee.hbase.convert;
+package cn.ponfee.hbase.convert;
 
-import java.text.ParseException;
-import java.util.Date;
-
+import cn.ponfee.commons.util.Bytes;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
-import code.ponfee.commons.util.Bytes;
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * The default convert based FastDateFormat
@@ -32,7 +31,8 @@ public class DefaultDateBytesConvertor extends DateBytesConvertor {
     protected Date toDate0(byte[] bytes) {
         String date = Bytes.toString(bytes);
         try {
-            return DateUtils.parseDate(date, this.patterns); // date format
+            // date format
+            return DateUtils.parseDate(date, this.patterns);
         } catch (ParseException e) {
             throw new RuntimeException("Invalid date format: " + date);
         }

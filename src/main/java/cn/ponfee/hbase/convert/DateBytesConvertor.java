@@ -1,10 +1,9 @@
-package code.ponfee.hbase.convert;
+package cn.ponfee.hbase.convert;
 
-import java.util.Date;
-
+import cn.ponfee.commons.util.Bytes;
 import org.apache.commons.lang3.ArrayUtils;
 
-import code.ponfee.commons.util.Bytes;
+import java.util.Date;
 
 /**
  * Date and byte array convert

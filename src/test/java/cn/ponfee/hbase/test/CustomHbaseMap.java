@@ -1,8 +1,8 @@
-package code.ponfee.hbase.test;
+package cn.ponfee.hbase.test;
 
-import code.ponfee.hbase.Constants;
-import code.ponfee.hbase.annotation.HbaseTable;
-import code.ponfee.hbase.model.HbaseMap;
+import cn.ponfee.hbase.Constants;
+import cn.ponfee.hbase.annotation.HbaseTable;
+import cn.ponfee.hbase.model.HbaseMap;
 
 @HbaseTable(namespace = Constants.HBASE_NAMESPACE, tableName = "test_hbase_map", family = "cf1")
 public class CustomHbaseMap extends HbaseMap<String> {

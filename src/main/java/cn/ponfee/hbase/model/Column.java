@@ -6,23 +6,21 @@
 **                      \/          \/     \/                             **
 \*                                                                        */
 
-package code.ponfee.hbase.model;
+package cn.ponfee.hbase.model;
+
+import cn.ponfee.commons.serial.Serializer;
+import cn.ponfee.hbase.annotation.HbaseField;
+import cn.ponfee.hbase.convert.DateBytesConvertor;
+import cn.ponfee.hbase.convert.DefaultDateBytesConvertor;
+import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.ImmutableList;
-
-import code.ponfee.commons.serial.Serializer;
-import code.ponfee.hbase.annotation.HbaseField;
-import code.ponfee.hbase.convert.DateBytesConvertor;
-import code.ponfee.hbase.convert.DefaultDateBytesConvertor;
 
 /**
  * Config java bean & hbase column mapping configuration
