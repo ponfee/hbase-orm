@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>cn.ponfee</groupId>
-  <artifactId>commons-hbase</artifactId>
+  <artifactId>hbase-orm</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>commons-hbase</name>
+  <name>hbase-orm</name>
 
   <properties>
     <hadoop.version>2.9.2</hadoop.version>
